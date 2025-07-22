@@ -279,7 +279,7 @@ namespace LittleEngine
 			//		delta = currentTime - lastTime;
 			//	} while (delta.count() < targetFrameTime);
 			//}
-				
+
 
 			lastTime = currentTime;
 
