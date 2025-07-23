@@ -3,6 +3,7 @@
 #include <iostream>
 #include <functional>
 #include <GLFW/glfw3.h>
+#include <memory>
 
 
 namespace LittleEngine::Input
@@ -13,7 +14,7 @@ namespace LittleEngine::Input
 	// represents a float in [-1, 1]
 	using InputAxis = float;
 
-	class Command abstract {
+	class Command {
 	public:
 		virtual std::string GetName() const = 0;
 		virtual void OnPress() {};

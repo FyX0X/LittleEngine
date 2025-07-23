@@ -1,7 +1,7 @@
 #pragma once
 
-#include <iostream>;
-#include <miniaudio.h>;
+#include <iostream>
+#include <miniaudio.h>
 #include <glm/glm.hpp>
 
 namespace LittleEngine::Audio

@@ -17,7 +17,7 @@
 
 #endif // 
 
-#if defined(_WIN32) || defined(_WIN64)
+#ifdef _WIN32
 #include <windows.h>
 #include <dbghelp.h>
 #pragma comment(lib, "dbghelp.lib")
@@ -94,10 +94,10 @@ namespace LittleEngine
 		}
 		internal::g_initialized = true;
 
-
+#ifdef _WIN32
 		// Initialize call stack recording
 		SymInitialize(GetCurrentProcess(), NULL, TRUE);
-
+#endif
 
 		// INITIALIZE GLFW
 #pragma region GLFW INIT

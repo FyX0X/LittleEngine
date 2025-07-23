@@ -1,5 +1,7 @@
 #include "LittleEngine/Graphics/bitmap_helper.h"
 #include <vector>
+#include <cstring> // for memcpy
+
 
 namespace LittleEngine::Graphics
 {
