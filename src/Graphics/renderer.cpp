@@ -330,7 +330,13 @@ namespace LittleEngine::Graphics
 		shader.SetMat4("projection", GetProjectionMatrix());
 		// set uniform texture sampler
 		// TODO: MAYBE MOVE SOMEWHERE ELSE IF NOT NEEDED EACH FRAME
-		shader.SetIntArray("uTextures", defaults::MAX_TEXTURE_SLOTS, m_samplers);
+		for (int i = 0; i < defaults::MAX_TEXTURE_SLOTS; ++i)
+		{
+			std::string uniformName = "uTex" + std::to_string(i);
+			shader.SetInt(uniformName, i); // Bind uTex{i} to texture unit i
+		}
+
+		//shader.SetIntArray("uTextures", defaults::MAX_TEXTURE_SLOTS, m_samplers);
 
 		size_t quadCountInBatch = 0;
 

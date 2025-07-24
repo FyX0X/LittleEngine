@@ -31,7 +31,7 @@ namespace LittleEngine::Graphics
         } 
     )";
 
-    const std::string defaultFragmentShader = R"(
+    const std::string old_defaultFragmentShader = R"(
         #version 330 core
         out vec4 FragColor;
 
@@ -47,6 +47,57 @@ namespace LittleEngine::Graphics
             FragColor = vColor * texture(uTextures[index], vTexCoord);
         }
     )";
+
+    const std::string defaultFragmentShader = R"(
+    #version 330 core
+    out vec4 FragColor;
+
+    in vec2 vTexCoord;
+    in vec4 vColor;
+    flat in int vTexIndex;
+
+    uniform sampler2D uTex0;
+    uniform sampler2D uTex1;
+    uniform sampler2D uTex2;
+    uniform sampler2D uTex3;
+    uniform sampler2D uTex4;
+    uniform sampler2D uTex5;
+    uniform sampler2D uTex6;
+    uniform sampler2D uTex7;
+    uniform sampler2D uTex8;
+    uniform sampler2D uTex9;
+    uniform sampler2D uTex10;
+    uniform sampler2D uTex11;
+    uniform sampler2D uTex12;
+    uniform sampler2D uTex13;
+    uniform sampler2D uTex14;
+    uniform sampler2D uTex15;
+
+    void main()
+    {
+        vec4 texColor;
+        if (vTexIndex == 0) texColor = texture(uTex0, vTexCoord);
+        else if (vTexIndex == 1) texColor = texture(uTex1, vTexCoord);
+        else if (vTexIndex == 2) texColor = texture(uTex2, vTexCoord);
+        else if (vTexIndex == 3) texColor = texture(uTex3, vTexCoord);
+        else if (vTexIndex == 4) texColor = texture(uTex4, vTexCoord);
+        else if (vTexIndex == 5) texColor = texture(uTex5, vTexCoord);
+        else if (vTexIndex == 6) texColor = texture(uTex6, vTexCoord);
+        else if (vTexIndex == 7) texColor = texture(uTex7, vTexCoord);
+        else if (vTexIndex == 8) texColor = texture(uTex8, vTexCoord);
+        else if (vTexIndex == 9) texColor = texture(uTex9, vTexCoord);
+        else if (vTexIndex == 10) texColor = texture(uTex10, vTexCoord);
+        else if (vTexIndex == 11) texColor = texture(uTex11, vTexCoord);
+        else if (vTexIndex == 12) texColor = texture(uTex12, vTexCoord);
+        else if (vTexIndex == 13) texColor = texture(uTex13, vTexCoord);
+        else if (vTexIndex == 14) texColor = texture(uTex14, vTexCoord);
+        else if (vTexIndex == 15) texColor = texture(uTex15, vTexCoord);
+        else texColor = vec4(1.0, 0.0, 1.0, 1.0); // fallback magenta
+
+        FragColor = vColor * texColor;
+    }
+)";
+
 
 #pragma endregion
 

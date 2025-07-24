@@ -46,7 +46,8 @@
  *		or use bindless textures ?
  *		or sparse bindless texture arrays ?
  * 
- * current solution: use flat int for texture index.
+ * current solution: use flat int for texture index. => still does not work on linux.
+ * new solution: not using array but 16 samplers variables.
  * 
  * 
  * 
