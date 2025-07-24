@@ -13,11 +13,11 @@ namespace LittleEngine::Graphics
         layout (location = 0) in vec2 aPos;
         layout (location = 1) in vec2 aTexCoord;
         layout (location = 2) in vec4 aColor;
-        layout (location = 3) in float aTexIndex;       // float because needs to be interpolated
+        layout (location = 3) in float aTexIndex;
 
         out vec2 vTexCoord;
         out vec4 vColor;
-        out float vTexIndex;
+        flat out int vTexIndex;
 
         uniform mat4 view;
         uniform mat4 projection;
@@ -27,7 +27,7 @@ namespace LittleEngine::Graphics
             gl_Position = projection * view * vec4(aPos, 0.0, 1.0);
             vTexCoord = aTexCoord;
             vColor = aColor;
-            vTexIndex = aTexIndex;
+            vTexIndex = int(aTexIndex);
         } 
     )";
 
@@ -37,7 +37,7 @@ namespace LittleEngine::Graphics
 
         in vec2 vTexCoord;
         in vec4 vColor;
-        in float vTexIndex;
+        flat in int vTexIndex;
 
         uniform sampler2D uTextures[16];
 
@@ -89,6 +89,10 @@ namespace LittleEngine::Graphics
             LogError("Shader::Initialize : Shader was already initialized.");
             return;
         }
+
+        std::cout << "OpenGL Version: " << glGetString(GL_VERSION) << std::endl;
+        std::cout << "GLSL Version: " << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
+        std::cout << "Renderer: " << glGetString(GL_RENDERER) << std::endl;
 
         s_defaultShader = CreateShaderFromCode(defaultVertexShader, defaultFragmentShader);
 

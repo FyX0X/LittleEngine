@@ -40,6 +40,16 @@
  *
  * GRAPHICS:
  * 
+ * current shader breaks on linux, seems to not respect correct glsl syntax but works on windows due to 
+ *		leniant implementation on intel drivers: texture arrays not used correctly.		
+ *		either find new implementation
+ *		or use bindless textures ?
+ *		or sparse bindless texture arrays ?
+ * 
+ * current solution: use flat int for texture index.
+ * 
+ * 
+ * 
  * add render target and fbo. ok but not good yet...
  * maybe still improve. => current projection maybe strange ... because not "pixel unit".
  * draw line
