@@ -141,10 +141,11 @@ namespace LittleEngine::Graphics
             return;
         }
 
+#if DEVELOPMENT_BUILD == 1
         std::cout << "OpenGL Version: " << glGetString(GL_VERSION) << std::endl;
         std::cout << "GLSL Version: " << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
         std::cout << "Renderer: " << glGetString(GL_RENDERER) << std::endl;
-
+#endif
         s_defaultShader = CreateShaderFromCode(defaultVertexShader, defaultFragmentShader);
 
     }
