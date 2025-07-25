@@ -14,7 +14,7 @@ namespace LittleEngine::Graphics
 
 #pragma region Loading / lifetime management.
 
-    void Texture::CreateEmptyTexture(int width, int height, int channelCount)
+    void Texture::CreateEmptyTexture(int width, int height, GLenum internalFormat)
     {
         if (id != 0)
             glDeleteTextures(1, &id);
@@ -25,31 +25,40 @@ namespace LittleEngine::Graphics
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-        int channelType = -1;
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-        switch (channelCount)
+
+        GLenum type = GL_UNSIGNED_BYTE;
+        GLenum baseFormat = GL_RGB; // default fallback
+
+        switch (internalFormat)
         {
+        case GL_RGB:
+        case GL_RGB16F:
+            baseFormat = GL_RGB;
+            break;
+        case GL_RGBA:
+        case GL_RGBA16F:
+            baseFormat = GL_RGBA;
+            break;
+        case GL_RED:
+            baseFormat = GL_RED;
+            break;
         default:
-            LogError("Texture::LoadFromData : allowed channelCount are {1, 2, 3, 4} but " + std::to_string(channelCount) + " was found.");
+            baseFormat = GL_RGB; // fallback, maybe log warning here
+			LogWarning("Texture::CreateEmptyTexture: Unsupported internal format " + std::to_string(internalFormat) + ", using GL_RGB as fallback.");
             break;
-        case 1:
-            channelType = GL_RED;
-            break;
-        case 2:
-            channelType = GL_RG;
-            break;
-        case 3:
-            channelType = GL_RGB;
-            break;
-        case 4:
-            channelType = GL_RGBA;
-            break;
-
         }
-        glTexImage2D(GL_TEXTURE_2D, 0, channelType, width, height, 0, channelType, GL_UNSIGNED_BYTE, NULL);
+        // For HDR formats like GL_RGB16F, you use GL_RGB and GL_FLOAT for type
+        if (internalFormat == GL_RGB16F || internalFormat == GL_RGBA16F)
+            type = GL_FLOAT;
+
+
+        glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, baseFormat, type, NULL);
         
 
-        if (channelCount == 1)
+        if (internalFormat == GL_RED)
         {
             GLint swizzleMask[] = { GL_ONE, GL_ONE, GL_ONE, GL_RED }; // RGB = 1.0 (white), A = red channel
             glTexParameteriv(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_RGBA, swizzleMask);

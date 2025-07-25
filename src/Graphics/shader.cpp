@@ -102,36 +102,52 @@ namespace LittleEngine::Graphics
 #pragma endregion
 
 #pragma region Initialization / lifetime management
-
-    Shader::Shader()
-    {
-        if (s_defaultShader == 0)
-        {
-            LogError("Shader constructor : Shader was not initialied.");
-            Initialize();
-        }
-        id = s_defaultShader;
-    }
     
-    // constructor generates the shader on the fly
-    // ------------------------------------------------------------------------
-    Shader::Shader(const std::string& vertex, const std::string& fragment, bool isPath)
+
+    Shader::~Shader()
     {
+		Cleanup();
+    }
+
+    void Shader::Create(const std::string& vertex, const std::string& fragment, bool isPath)
+    {
+        if (id != 0)
+        {
+            LogError("Shader::Create : Shader was already created.");
+            return;
+        }
         if (isPath)
         {
             id = CreateShaderFromFile(vertex, fragment);
         }
-        else 
+        else
         {
             id = CreateShaderFromCode(vertex, fragment);
         }
-    }
+	}
 
-    Shader::~Shader()
+    void Shader::CreateDefault()
+    {
+        if (s_defaultShader == 0)
+        {
+            LogError("Shader constructor : Shader was not initialized.");
+            Initialize();
+        }
+        id = s_defaultShader;
+	}
+
+    void Shader::Cleanup()
     {
         if (id != 0)
+        {
             glDeleteProgram(id);
-    }
+            id = 0;
+        }
+        else
+        {
+			LogError("Shader::Cleanup : Shader was not created.");
+        }
+	}
 
     void Shader::Initialize()
     {
@@ -164,7 +180,7 @@ namespace LittleEngine::Graphics
     // ------------------------------------------------------------------------
     void Shader::SetBool(const std::string& name, bool value) const
     {
-        glUniform1i(glGetUniformLocation(id, name.c_str()), (int)value);
+        glUniform1i(glGetUniformLocation(id, name.c_str()), static_cast<int>(value));
     }
     // ------------------------------------------------------------------------
     void Shader::SetInt(const std::string& name, int value) const

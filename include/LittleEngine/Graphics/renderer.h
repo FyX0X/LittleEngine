@@ -37,7 +37,7 @@ namespace LittleEngine::Graphics
 		Renderer operator=(Renderer& other) = delete;
 		Renderer operator=(Renderer&& other) = delete;
 
-		void Initialize(glm::ivec2 size, unsigned int quadCount = defaults::QuadCount);
+		void Initialize(const Camera& camera, glm::ivec2 size, unsigned int quadCount = defaults::QuadCount);
 		void Shutdown();
 		void UpdateWindowSize(glm::ivec2 size) 
 		{
@@ -55,7 +55,10 @@ namespace LittleEngine::Graphics
 		void EndFrame();
 
 
-		void SaveScreenshot(RenderTarget* target = nullptr);
+		void FlushFullscreenQuad();
+
+
+		void SaveScreenshot(RenderTarget* target = nullptr, const std::string& name = "");
 
 #pragma region DRAW RECT
 
@@ -95,8 +98,10 @@ namespace LittleEngine::Graphics
 
 
 		Color clearColor = Color( 0.2f, 0.3f, 0.3f, 1.0f );
-		Camera camera = {};
+		//Camera camera = {};
 		Shader shader;
+
+		void SetCamera(const Camera& camera) { m_camera = &camera; }
 
 		void Flush();
 	private:
@@ -112,6 +117,9 @@ namespace LittleEngine::Graphics
 
 		static Texture s_defaultTexture;
 		static Font s_defaultFont;
+
+
+		const Camera* m_camera = nullptr;
 
 		int m_width = -1;
 		int m_height = -1;
@@ -137,6 +145,8 @@ namespace LittleEngine::Graphics
 		const int m_samplers[16] = { 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15 };
 
 
+		unsigned int m_fullscreenVAO = 0;
+		unsigned int m_fullscreenVBO = 0;
 
 	};
 

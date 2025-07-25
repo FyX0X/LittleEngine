@@ -54,7 +54,7 @@ namespace LittleEngine::Graphics
 
 	}
 
-	glm::mat4 Camera::GetViewMatrix()
+	glm::mat4 Camera::GetViewMatrix() const
 	{
 		glm::mat4 view = glm::mat4(1.f);
 		view = glm::scale(view, glm::vec3(zoom, zoom, 1.f));          // scale first

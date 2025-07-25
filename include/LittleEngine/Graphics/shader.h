@@ -17,11 +17,12 @@ namespace LittleEngine::Graphics
     class Shader
     {
     public:
-        unsigned int id;
-        // constructor generates the shader on the fly
-        Shader();
-        Shader(const std::string& vertex, const std::string& fragment, bool isPath = true);
+        unsigned int id = 0;
         ~Shader();
+
+        void Create(const std::string& vertex, const std::string& fragment, bool isPath = true);
+		void CreateDefault();
+        void Cleanup();
 
         // creates the default shader
         static void Initialize();

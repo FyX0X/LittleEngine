@@ -7,7 +7,7 @@ namespace LittleEngine::Graphics
 
 #pragma region Initialization / lifetime management.
 
-	bool RenderTarget::Create(int width, int height)
+	bool RenderTarget::Create(int width, int height, GLenum internalFormat)
 	{
 		if (width < 0 || height < 0)
 		{
@@ -27,7 +27,7 @@ namespace LittleEngine::Graphics
 		*/
 
 		// create empty texture
-		m_texture.CreateEmptyTexture(width, height, 3);
+		m_texture.CreateEmptyTexture(width, height, internalFormat);
 		// bind the texture to the frame buffer.
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_texture.id, 0);
 
@@ -48,6 +48,14 @@ namespace LittleEngine::Graphics
 
 #pragma endregion
 
+
+	void RenderTarget::Clear(Color color)
+	{
+		Bind();
+		glClearColor(color.r, color.g, color.b, color.a);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		Unbind();
+	}
 
 
 }

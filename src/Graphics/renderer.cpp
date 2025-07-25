@@ -23,7 +23,7 @@ namespace LittleEngine::Graphics
 
 #pragma region init / shut down
 
-	void Renderer::Initialize(glm::ivec2 size, unsigned int quadCount)
+	void Renderer::Initialize(const Camera& camera, glm::ivec2 size, unsigned int quadCount)
 	{
 
 		if (!internal::g_initialized)
@@ -35,6 +35,8 @@ namespace LittleEngine::Graphics
 			return;	
 		}
 		m_isInitialized = true;
+
+		SetCamera(camera);
 
 		m_vertices.reserve(quadCount * 4);
 		m_indices.reserve(quadCount * 6);
@@ -84,6 +86,9 @@ namespace LittleEngine::Graphics
 
 
 		UpdateWindowSize(size);
+
+		shader.CreateDefault();
+		shader.Use();
 
 	}
 
@@ -230,11 +235,23 @@ namespace LittleEngine::Graphics
 		}
 
 		m_renderTarget = target;
+		int width, height;
+		if (target == nullptr)	// window
+		{
+			width = m_width;
+			height = m_height;
+		}
+		else 
+		{
+			width = target->GetSize().x;
+			height = target->GetSize().y;
+		}
+		glViewport(0, 0, width, height); // reset viewport to target size
 	}
 
 	void Renderer::BeginFrame()
 	{
-		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+		glClearColor(Colors::ClearColor.r, Colors::ClearColor.g, Colors::ClearColor.b, Colors::ClearColor.a);
 		glClear(GL_COLOR_BUFFER_BIT);
 		
 		
@@ -248,7 +265,7 @@ namespace LittleEngine::Graphics
 	}
 
 
-	void Renderer::SaveScreenshot(RenderTarget* target)
+	void Renderer::SaveScreenshot(RenderTarget* target, const std::string& name)
 	{
 		int width, height;
 		int imageTarget;
@@ -279,7 +296,7 @@ namespace LittleEngine::Graphics
 
 		Storage::EnsureDirectoryExists("screenshots");
 
-		std::string path = Storage::GetNextFreeFilepath("screenshots", "screenshot", ".png");
+		std::string path = Storage::GetNextFreeFilepath("screenshots", "screenshot" + name, ".png");
 
 
 		stbi_write_png(path.c_str(), width, height, 4, pixels.data(), width * 4);
@@ -311,6 +328,12 @@ namespace LittleEngine::Graphics
 			return;
 		}
 
+		if (m_camera == nullptr)
+		{
+			LogError("Renderer::Flush : Camera not set.");
+			return;
+		}
+
 		if (m_renderTarget == nullptr)	// draw to screen
 		{
 			glViewport(0, 0, m_width, m_height);
@@ -323,10 +346,10 @@ namespace LittleEngine::Graphics
 		}
 
 		// Bind shader
-		shader.Use();
+		//shader.Use();
 
 		// initializes uniform variables
-		shader.SetMat4("view", camera.GetViewMatrix());
+		shader.SetMat4("view", m_camera->GetViewMatrix());
 		shader.SetMat4("projection", GetProjectionMatrix());
 		// set uniform texture sampler
 		// TODO: MAYBE MOVE SOMEWHERE ELSE IF NOT NEEDED EACH FRAME
@@ -389,6 +412,8 @@ namespace LittleEngine::Graphics
 			m_renderTarget->Unbind();
 
 
+		ClearDrawQueue();	// clear draw queue after flushing
+
 	}
 
 	void Renderer::RenderBatch()
@@ -444,6 +469,46 @@ namespace LittleEngine::Graphics
 
 	}
 
+
+	void Renderer::FlushFullscreenQuad()
+	{
+		if (m_fullscreenVAO == 0) {
+			// First-time setup
+			float quadVertices[] = {
+				// positions   // tex coords
+				-1.0f,  1.0f,  0.0f, 1.0f,  // top-left
+				-1.0f, -1.0f,  0.0f, 0.0f,  // bottom-left
+				 1.0f, -1.0f,  1.0f, 0.0f,  // bottom-right
+
+				-1.0f,  1.0f,  0.0f, 1.0f,  // top-left
+				 1.0f, -1.0f,  1.0f, 0.0f,  // bottom-right
+				 1.0f,  1.0f,  1.0f, 1.0f   // top-right
+			};
+
+			glGenVertexArrays(1, &m_fullscreenVAO);
+			glGenBuffers(1, &m_fullscreenVBO);
+
+			glBindVertexArray(m_fullscreenVAO);
+			glBindBuffer(GL_ARRAY_BUFFER, m_fullscreenVBO);
+			glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), quadVertices, GL_STATIC_DRAW);
+
+			// Position (vec2)
+			glEnableVertexAttribArray(0);
+			glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
+			// TexCoord (vec2)
+			glEnableVertexAttribArray(1);
+			glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
+
+			glBindBuffer(GL_ARRAY_BUFFER, 0);
+			glBindVertexArray(0);
+		}
+
+		// Draw
+		glBindVertexArray(m_fullscreenVAO);
+		glDrawArrays(GL_TRIANGLES, 0, 6);
+		glBindVertexArray(0);
+	}
+
 #pragma endregion
 
 #pragma region Clear frame / batch
@@ -472,21 +537,28 @@ namespace LittleEngine::Graphics
 
 	glm::mat4 Renderer::GetProjectionMatrix()
 	{
-		float aspectRatio = static_cast<float>(m_width) / static_cast<float>(m_height);
-		float halfWidth, halfHeight;
-		if (aspectRatio >= 16.f/9.f)
-		{
-			halfWidth = defaults::viewWidth / 2;
-			halfHeight = halfWidth / aspectRatio;
-		}
-		else
-		{
-			halfHeight = defaults::viewHeight / 2;
-			halfWidth = halfHeight * aspectRatio;
+		//float aspectRatio = static_cast<float>(m_width) / static_cast<float>(m_height);
+		//float halfWidth, halfHeight;
+		//if (aspectRatio >= 16.f/9.f)
+		//{
+		//	halfWidth = defaults::viewWidth / 2;
+		//	halfHeight = halfWidth / aspectRatio;
+		//}
+		//else
+		//{
+		//	halfHeight = defaults::viewHeight / 2;
+		//	halfWidth = halfHeight * aspectRatio;
 
-		}
-		// tODO change this
-		return glm::ortho(-halfWidth, halfWidth, -halfHeight, halfHeight, -1.f, 1.f);
+		//}
+		//// tODO change this
+		//return glm::ortho(-halfWidth, halfWidth, -halfHeight, halfHeight, -1.f, 1.f);
+
+		//float halfWidth = m_width / 2.f;
+		//float halfHeight = m_height / 2.f;
+
+		//return glm::ortho(-halfWidth, halfWidth, -halfHeight, halfHeight);
+		return glm::ortho(0.f, static_cast<float>(m_width), 0.f, static_cast<float>(m_height), -1.f, 1.f);
+
 	}
 
 #pragma endregion

@@ -15,7 +15,7 @@ namespace LittleEngine::Graphics
 		int width = -1;
 		int height = -1;
 
-		void CreateEmptyTexture(int width, int height, int channelCount);
+		void CreateEmptyTexture(int width, int height, GLenum internalFormat);
 		void LoadFromFile(const std::string& path, bool pixelated = defaults::pixelated, bool mipmaps = defaults::mipmaps, bool verticalFlip = false);
 		void LoadFromData(const unsigned char* data, int width, int height, int channelCount = 4, bool pixelated = defaults::pixelated, bool mipmaps = defaults::mipmaps, bool verticalFlip = false);
 		//glm::ivec2 GetSize();

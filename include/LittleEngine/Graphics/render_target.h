@@ -3,6 +3,7 @@
 #include <glad/glad.h>
 
 #include "LittleEngine/Graphics/texture.h"
+#include "LittleEngine/Graphics/color.h"
 
 
 namespace LittleEngine::Graphics
@@ -13,11 +14,13 @@ namespace LittleEngine::Graphics
 	{
 	public:
 
-		bool Create(int width, int height);			// later: bool hasDepthBuffer ??
+		bool Create(int width, int height, GLenum internalFormat = GL_RGB);			// later: bool hasDepthBuffer ??
 		void Cleanup();
 
 		void Bind() { glBindFramebuffer(GL_FRAMEBUFFER, m_fbo); }
 		void Unbind() { glBindFramebuffer(GL_FRAMEBUFFER, 0); }
+
+		void Clear(Color color = Colors::ClearColor);
 		
 		const Texture& GetTexture() { return m_texture; }
 

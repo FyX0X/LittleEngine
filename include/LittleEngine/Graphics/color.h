@@ -20,6 +20,7 @@ namespace LittleEngine::Graphics
 		inline const Color Purple { 101.0f / 255.0f, 29.0f / 255.0f, 173.0f / 255.0f, 1 };
 		inline const Color Gray { (float)0x7F / 255.0f, (float)0x7F / 255.0f, (float)0x7F / 255.0f, 1 };
 		inline const Color Transparent { 0,0,0,0 };
+		inline const Color ClearColor{ 0.2f, 0.3f, 0.3f, 1.0f };
 
 	}
 }
