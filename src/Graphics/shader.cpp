@@ -174,6 +174,10 @@ namespace LittleEngine::Graphics
     // ------------------------------------------------------------------------
     void Shader::Use()
     {
+        if (id == 0)
+        {
+			ThrowError("Shader::Use : Shader was not created. Call Create() first.");
+        }
         glUseProgram(id);
     }
     // utility uniform functions

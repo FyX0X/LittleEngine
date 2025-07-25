@@ -51,10 +51,30 @@ namespace LittleEngine::Graphics
 
 	void RenderTarget::Clear(Color color)
 	{
-		Bind();
+		GLint fbo = 0;
+		glGetIntegerv(GL_FRAMEBUFFER_BINDING, &fbo);
+		if (fbo != m_fbo)
+		{
+			LogError("RenderTarget::Clear rendertarget was not bound.");
+			Bind();
+		}		
 		glClearColor(color.r, color.g, color.b, color.a);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		Unbind();
+		//Unbind();
+	}
+
+
+	void RenderTarget::Bind()
+	{
+		glBindFramebuffer(GL_FRAMEBUFFER, m_fbo);
+		glViewport(0, 0, m_width, m_height); // reset viewport to target size
+	}
+
+	void RenderTarget::Unbind()
+	{
+		glBindFramebuffer(GL_FRAMEBUFFER, 0); // bind default framebuffer
+		//glViewport(0, 0, -1, -1); // reset viewport to target size
+		// you have to set the viewport manually after unbinding, because it is not reset automatically.
 	}
 
 

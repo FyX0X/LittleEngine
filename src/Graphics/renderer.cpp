@@ -235,6 +235,14 @@ namespace LittleEngine::Graphics
 		}
 
 		m_renderTarget = target;
+		if (target)
+		{
+			target->Bind(); // bind the new target
+		}
+		else
+		{
+			BindScreen(); // bind the default framebuffer (screen)
+		}
 		int width, height;
 		if (target == nullptr)	// window
 		{
@@ -338,12 +346,12 @@ namespace LittleEngine::Graphics
 		{
 			glViewport(0, 0, m_width, m_height);
 		}
-		else
-		{
-			glm::ivec2 size = m_renderTarget->GetSize();
-			glViewport(0, 0, size.x, size.y);
-			m_renderTarget->Bind();
-		}
+		//else
+		//{
+		//	glm::ivec2 size = m_renderTarget->GetSize();
+		//	glViewport(0, 0, size.x, size.y);
+		//	m_renderTarget->Bind();
+		//}
 
 		// Bind shader
 		//shader.Use();
@@ -408,8 +416,8 @@ namespace LittleEngine::Graphics
 		}
 
 
-		if (m_renderTarget != nullptr)
-			m_renderTarget->Unbind();
+		//if (m_renderTarget != nullptr)
+		//	m_renderTarget->Unbind();
 
 
 		ClearDrawQueue();	// clear draw queue after flushing
@@ -532,6 +540,13 @@ namespace LittleEngine::Graphics
 	}
 
 #pragma endregion
+
+
+	void Renderer::BindScreen()
+	{
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		glViewport(0, 0, m_width, m_height); // reset viewport to target size
+	}
 
 #pragma region Getters
 

@@ -103,6 +103,8 @@ namespace LittleEngine::Graphics
 		void SetCamera(const Camera& camera) { m_camera = &camera; }
 
 		void Flush();
+
+		void BindScreen();
 	private:
 		// TODO REFACTOR AUTO FLUSH IF FULL NOT AT END
 		// FLUSH BATCH IF: > 16 textures || #indices > 65536 (or > 10K quads)
@@ -110,7 +112,6 @@ namespace LittleEngine::Graphics
 		int AddTextureToBatch(Texture texture);
 		void ClearDrawQueue();
 		void ClearBatch();
-		//glm::mat4 GetProjectionMatrix();
 
 		bool m_isInitialized = false;
 

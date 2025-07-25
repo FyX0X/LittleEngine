@@ -17,8 +17,8 @@ namespace LittleEngine::Graphics
 		bool Create(int width, int height, GLenum internalFormat = GL_RGB);			// later: bool hasDepthBuffer ??
 		void Cleanup();
 
-		void Bind() { glBindFramebuffer(GL_FRAMEBUFFER, m_fbo); }
-		void Unbind() { glBindFramebuffer(GL_FRAMEBUFFER, 0); }
+		void Bind();
+		void Unbind();
 
 		void Clear(Color color = Colors::ClearColor);
 		
