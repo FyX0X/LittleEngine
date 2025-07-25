@@ -23,7 +23,15 @@ namespace LittleEngine::Graphics
 		// Camera zoom (scaling), should be 1.0f by default
 		float zoom = 1.f;
 
+		// needs to be updated when the window size changes.
+		glm::vec2 viewportSize = { -1.f, -1.f };	// viewport size, default is -1, -1 (no viewport set)
+		bool centered = false;	// if true, the camera will be centered on the viewport, otherwise it will be at the bottom left corner.
+
 		void Reset() { *this = Camera{}; }
+
+		glm::mat4 GetProjectionMatrix() const;
+		glm::mat4 GetViewMatrix() const;
+
 
 		//Used to follow objects (player for example).
 		//The followed object (pos) will get placed in the center of the screen.
@@ -54,7 +62,6 @@ namespace LittleEngine::Graphics
 		 */
 		void FollowSpring(const glm::vec2& target, float dt, float maxDistance = 5.f, float stiffness = 20.f, float damping = -1);
 
-		glm::mat4 GetViewMatrix() const;
 	};
 
 

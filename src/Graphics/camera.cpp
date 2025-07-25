@@ -54,6 +54,23 @@ namespace LittleEngine::Graphics
 
 	}
 
+	glm::mat4 Camera::GetProjectionMatrix() const
+	{
+		float w = viewportSize.x;
+		float h = viewportSize.y;
+
+		if (centered) {
+			return glm::ortho(-w / 2.0f, w / 2.0f,
+				-h / 2.0f, h / 2.0f,
+				-1.f, 1.f);
+		}
+		else {
+			return glm::ortho(0.0f, w,
+				0.0f, h,
+				-1.f, 1.f);
+		}
+	}
+
 	glm::mat4 Camera::GetViewMatrix() const
 	{
 		glm::mat4 view = glm::mat4(1.f);

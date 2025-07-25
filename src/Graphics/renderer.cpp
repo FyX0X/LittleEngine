@@ -350,7 +350,7 @@ namespace LittleEngine::Graphics
 
 		// initializes uniform variables
 		shader.SetMat4("view", m_camera->GetViewMatrix());
-		shader.SetMat4("projection", GetProjectionMatrix());
+		shader.SetMat4("projection", m_camera->GetProjectionMatrix());
 		// set uniform texture sampler
 		// TODO: MAYBE MOVE SOMEWHERE ELSE IF NOT NEEDED EACH FRAME
 		for (int i = 0; i < defaults::MAX_TEXTURE_SLOTS; ++i)
@@ -535,31 +535,6 @@ namespace LittleEngine::Graphics
 
 #pragma region Getters
 
-	glm::mat4 Renderer::GetProjectionMatrix()
-	{
-		//float aspectRatio = static_cast<float>(m_width) / static_cast<float>(m_height);
-		//float halfWidth, halfHeight;
-		//if (aspectRatio >= 16.f/9.f)
-		//{
-		//	halfWidth = defaults::viewWidth / 2;
-		//	halfHeight = halfWidth / aspectRatio;
-		//}
-		//else
-		//{
-		//	halfHeight = defaults::viewHeight / 2;
-		//	halfWidth = halfHeight * aspectRatio;
-
-		//}
-		//// tODO change this
-		//return glm::ortho(-halfWidth, halfWidth, -halfHeight, halfHeight, -1.f, 1.f);
-
-		//float halfWidth = m_width / 2.f;
-		//float halfHeight = m_height / 2.f;
-
-		//return glm::ortho(-halfWidth, halfWidth, -halfHeight, halfHeight);
-		return glm::ortho(0.f, static_cast<float>(m_width), 0.f, static_cast<float>(m_height), -1.f, 1.f);
-
-	}
 
 #pragma endregion
 }

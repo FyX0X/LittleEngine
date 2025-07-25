@@ -97,7 +97,6 @@ namespace LittleEngine::Graphics
 
 
 
-		Color clearColor = Color( 0.2f, 0.3f, 0.3f, 1.0f );
 		//Camera camera = {};
 		Shader shader;
 
@@ -111,9 +110,10 @@ namespace LittleEngine::Graphics
 		int AddTextureToBatch(Texture texture);
 		void ClearDrawQueue();
 		void ClearBatch();
-		glm::mat4 GetProjectionMatrix();
+		//glm::mat4 GetProjectionMatrix();
 
 		bool m_isInitialized = false;
+
 
 		static Texture s_defaultTexture;
 		static Font s_defaultFont;
