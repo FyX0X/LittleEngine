@@ -20,7 +20,7 @@ namespace LittleEngine::Graphics
 		void Bind();
 		void Unbind();
 
-		void Clear(Color color = Colors::ClearColor);
+		void Clear(Color color = Colors::Black);
 		
 		const Texture& GetTexture() { return m_texture; }
 
