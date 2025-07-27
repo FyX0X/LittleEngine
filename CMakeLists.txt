@@ -27,7 +27,7 @@ target_sources(LittleEngine PRIVATE
 	"src/Graphics/render_target.cpp" 
 	"src/Graphics/bitmap_helper.cpp" 
 	"src/Storage/storage_helper.cpp"
-) # add later "src/gl2dParticleSystem.cpp")
+ "include/LittleEngine/geometry.h" "src/geometry.cpp") # add later "src/gl2dParticleSystem.cpp")
 
 target_include_directories(LittleEngine PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include")
 target_link_libraries(LittleEngine PUBLIC glm glad stb_image freetype glfw imgui miniaudio)

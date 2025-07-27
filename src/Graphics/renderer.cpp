@@ -1,3 +1,4 @@
+
 #include "LittleEngine/Graphics/renderer.h"
 #include "LittleEngine/Graphics/bitmap_helper.h"
 
@@ -176,6 +177,55 @@ namespace LittleEngine::Graphics
 
 		m_quadCount++;
 	}
+
+	void Renderer::DrawLine(const Edge& e, float width, Color color)
+	{
+		if (s_defaultTexture.id == 0)	// problem
+			ThrowError("RENDERER::DrawLine : default texture not loaded.");
+
+		glm::vec2 halfWidthVector = e.normal() * width / 2.f;	// right normal
+
+
+		// position
+		glm::vec2 p0 = e.p1 + halfWidthVector;
+		glm::vec2 p1 = e.p2 + halfWidthVector;
+		glm::vec2 p2 = e.p2 - halfWidthVector;
+		glm::vec2 p3 = e.p1 - halfWidthVector;
+
+
+		// UVs
+		glm::vec2 uv0{ 0, 0 };		// bottom left
+		glm::vec2 uv1{ 1, 0 };		// bottom right
+		glm::vec2 uv2{ 1, 1 };		// top right
+		glm::vec2 uv3{ 0, 1 };		// top left
+
+
+		Vertex v0 = { p0, uv0, color, s_defaultTexture.id };
+		Vertex v1 = { p1, uv1, color, s_defaultTexture.id };
+		Vertex v2 = { p2, uv2, color, s_defaultTexture.id };
+		Vertex v3 = { p3, uv3, color, s_defaultTexture.id };
+
+
+		int index = m_vertices.size();
+
+		m_vertices.push_back(v0);
+		m_vertices.push_back(v1);
+		m_vertices.push_back(v2);
+		m_vertices.push_back(v3);
+
+		m_indices.push_back(index + 0);
+		m_indices.push_back(index + 1);
+		m_indices.push_back(index + 2);
+		m_indices.push_back(index + 0);
+		m_indices.push_back(index + 2);
+		m_indices.push_back(index + 3);
+
+		m_textures.push_back(s_defaultTexture);
+
+		m_quadCount++;
+
+	}
+
 
 	void Renderer::DrawString(const std::string& text, const glm::vec2 pos, const Font& font, Color color, float scale)
 	{

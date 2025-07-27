@@ -1,3 +1,4 @@
+
 #include "LittleEngine/Input/input.h"
 
 #include "LittleEngine/error_logger.h"
@@ -232,6 +233,11 @@ namespace LittleEngine::Input
 		std::fill(s_currentKeyState.begin(), s_currentKeyState.end(), false);
 		std::fill(s_previousMouseButtonState.begin(), s_previousMouseButtonState.end(), false);
 		std::fill(s_previousMouseButtonState.begin(), s_previousMouseButtonState.end(), false);
+	}
+
+	glm::ivec2 GetMousePosition()
+	{
+		return glm::ivec2(s_mouseX, s_mouseY);
 	}
 
 #pragma endregion

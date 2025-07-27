@@ -5,6 +5,7 @@
 #include "LittleEngine/Graphics/texture.h"
 #include "LittleEngine/Graphics/font.h"
 #include "LittleEngine/Graphics/render_target.h"
+#include "LittleEngine/geometry.h"
 #include <vector>
 #include <array>
 #include <unordered_map>
@@ -82,6 +83,15 @@ namespace LittleEngine::Graphics
 
 #pragma endregion
 
+#pragma region DRAW LINE
+
+		void DrawLine(const glm::vec2& p1, const glm::vec2& p2, float width = 1.f, Color color = Colors::White)
+		{
+			DrawLine({ p1, p2 }, width, color);
+		}
+		void DrawLine(const Edge& e, float width = 1.f, Color color = Colors::White);
+
+#pragma endregion
 #pragma region DRAW TEXT
 
 		void DrawString(const std::string& text, const glm::vec2 pos, Color color = Colors::White, float scale = 1.f) 

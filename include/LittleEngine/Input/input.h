@@ -4,6 +4,7 @@
 #include <functional>
 #include <GLFW/glfw3.h>
 #include <memory>
+#include <glm/glm.hpp>
 
 
 namespace LittleEngine::Input
@@ -44,6 +45,8 @@ namespace LittleEngine::Input
 	void UpdateAxis(KeyCode key);
 
 	void ResetKeyState();
+
+	glm::ivec2 GetMousePosition();
 
 	float GetAxis(const std::string& name);
 	bool IsKeyDown(KeyCode key);

@@ -32,6 +32,8 @@
 #include "LittleEngine/Audio/audio.h"
 #include "LittleEngine/Audio/sound.h"
 
+#include "LittleEngine/geometry.h"
+
 #include "LittleEngine/internal.h"
 
 
