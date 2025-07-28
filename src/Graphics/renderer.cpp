@@ -227,6 +227,110 @@ namespace LittleEngine::Graphics
 	}
 
 
+	
+	void Renderer::DrawPolygon(const Polygon& polygon, const Color& color)
+	{
+		if (s_defaultTexture.id == 0)	// problem
+			ThrowError("RENDERER::DrawLine : default texture not loaded.");
+
+		// check if polygon is valid
+		if (!polygon.IsValid())
+		{
+			LogError("Renderer::DrawPolygon : Polygon is not valid.");
+			return;
+		}
+
+		int vertexCount = static_cast<int>(polygon.vertices.size());
+
+		//int index = m_vertices.size();
+
+		//// push all vertices to the vertex buffer
+		//for (size_t i = 0; i < vertexCount; i++)
+		//{
+		//	Vertex v{ polygon.vertices[i], {0, 0}, color, s_defaultTexture.id };
+		//	m_vertices.push_back(v);
+		//}
+
+
+		//for (int i = 1; i < vertexCount - 1; ++i)
+		//{
+		//	//draw a triangle from the first vertex to the current vertex and the next vertex
+		//	m_indices.push_back(index + 0); // first vertex
+		//	m_indices.push_back(index + i); // current vertex
+		//	m_indices.push_back(index + i + 1); // next vertex
+		//}
+
+		//// add the default texture to the texture buffer
+		//m_textures.push_back(s_defaultTexture);
+
+		//// update the quad count ???????????
+		//m_quadCount += vertexCount - 2;		// overcounting, but not a problem for now
+
+
+
+		// NOT working because flush uses quads only.
+
+		int triangleCount = vertexCount - 2; // number of triangles in the polygon
+
+		// if triangle count is even => good
+		// if triangle count is odd => make a false quad by duplicating the last vertex
+
+		Polygon poly = polygon; // copy polygon to modify it
+
+		if (triangleCount % 2 != 0)
+		{
+			poly.vertices.push_back(polygon.vertices.back()); // duplicate last vertex
+			vertexCount++;
+			triangleCount++;
+		}
+
+		// all quads are (0123, 0345, 0567, ...)
+		for (size_t i = 0; i < triangleCount / 2; i++)
+		{
+			int index = m_vertices.size();
+			Vertex v0{ poly.vertices[0], {0, 0}, color, s_defaultTexture.id }; // first vertex
+			Vertex v1{ poly.vertices[2 * i + 1], {0, 0}, color, s_defaultTexture.id }; // current vertex
+			Vertex v2{ poly.vertices[2 * i + 2], {0, 0}, color, s_defaultTexture.id }; // next vertex
+			Vertex v3{ poly.vertices[2 * i + 3], {0, 0}, color, s_defaultTexture.id }; // first vertex again for the quad
+			m_vertices.push_back(v0);
+			m_vertices.push_back(v1);
+			m_vertices.push_back(v2);
+			m_vertices.push_back(v3);
+
+			m_indices.push_back(index + 0);
+			m_indices.push_back(index + 1);
+			m_indices.push_back(index + 2);
+			m_indices.push_back(index + 0);
+			m_indices.push_back(index + 2);
+			m_indices.push_back(index + 3);
+
+			m_textures.push_back(s_defaultTexture);
+
+			m_quadCount++;
+		}
+
+
+	}
+
+	void Renderer::DrawPolygonOutline(const Polygon& polygon, float width, const Color& color)
+	{
+		if (s_defaultTexture.id == 0)	// problem
+			ThrowError("RENDERER::DrawPolygonOutline : default texture not loaded.");
+
+		// check if polygon is valid
+		if (!polygon.IsValid())
+		{
+			LogError("Renderer::DrawPolygonOutline : Polygon is not valid.");
+			return;
+		}
+
+		for (Edge& e : polygon.GetEdges())
+		{
+			DrawLine(e, width, color);
+		}
+	}
+
+
 	void Renderer::DrawString(const std::string& text, const glm::vec2 pos, const Font& font, Color color, float scale)
 	{
 		if (font.GetTexture().id == 0)

@@ -6,6 +6,10 @@
 
 #ifdef _WIN32
 #include "Windows.h"
+
+#undef min
+#undef max
+
 #endif // _WIN32
 
 
@@ -14,6 +18,7 @@ namespace LittleEngine
 {
 	inline void ShowMessageBox(const std::string& title, const std::string& message)
 	{
+
 #ifdef _WIN32
 		MessageBoxA(nullptr, message.c_str(), title.c_str(), MB_OK | MB_ICONERROR);
 

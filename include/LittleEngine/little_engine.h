@@ -51,7 +51,7 @@
  * current solution: use flat int for texture index. => still does not work on linux.
  * new solution: not using array but 16 samplers variables.
  * 
- * 
+ * fix flush to allow better polygon instead of mutliple quads.
  * 
  * add render target and fbo. ok but not good yet...
  * maybe still improve. => current projection maybe strange ... because not "pixel unit".

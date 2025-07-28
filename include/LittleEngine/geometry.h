@@ -41,25 +41,13 @@ namespace LittleEngine
 	{
 		std::vector<glm::vec2> vertices;
 
-
+		bool IsValid() const;
 		bool IsCounterClockwise() const;
 		void EnsureCounterClockwise() const;
 		float SignedArea() const;
 		bool IsSelfIntersecting() const;
 
-		std::vector<Edge> GetEdges()
-		{
-			std::vector<Edge> edges;
-
-			for (size_t i = 0; i < vertices.size(); ++i)
-			{
-				glm::vec2 p1 = vertices[i];
-				glm::vec2 p2 = vertices[(i + 1) % vertices.size()];
-				edges.push_back({ p1, p2 });
-			}
-
-			return edges;
-		}
+		std::vector<Edge> GetEdges() const;
 	};
 
 } // namespace LittleEngine

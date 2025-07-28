@@ -92,6 +92,16 @@ namespace LittleEngine::Graphics
 		void DrawLine(const Edge& e, float width = 1.f, Color color = Colors::White);
 
 #pragma endregion
+
+#pragma region DRAW POLYGON
+		// Only works with convex polygons
+		void DrawPolygon(const Polygon& polygon, const Color& color = Colors::White);
+
+		void DrawPolygonOutline(const Polygon& polygon, float width = 1.f, const Color& color = Colors::White);
+
+#pragma endregion
+
+
 #pragma region DRAW TEXT
 
 		void DrawString(const std::string& text, const glm::vec2 pos, Color color = Colors::White, float scale = 1.f) 

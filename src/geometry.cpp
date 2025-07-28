@@ -1,5 +1,5 @@
 #include "LittleEngine/geometry.h"
-
+#include "LittleEngine/error_logger.h"
 
 namespace LittleEngine
 {
@@ -25,8 +25,7 @@ namespace LittleEngine
 
 	float TriangleSignedArea(const glm::vec2& a, const glm::vec2& b, const glm::vec2& c)
 	{
-		return ((b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x)) / 2.f;
-
+		return ((b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x)) * 0.5f;
 	}
 
 	bool SegmentsIntersect(const Edge& e1, const Edge& e2)
@@ -74,5 +73,90 @@ namespace LittleEngine
 
 #pragma endregion
 
+
+	bool Polygon::IsValid() const
+	{
+		// temp: output for debugging
+		if (vertices.size() < 3)
+		{
+			LogWarning("Polygon is invalid: less than 3 vertices.");
+			return false;
+		}
+
+		if (!IsCounterClockwise())
+		{
+			LogWarning("Polygon is in clockwise order.");
+			return false;
+		}
+
+		if (IsSelfIntersecting())
+		{
+			LogWarning("Polygon is self-intersecting.");
+			return false;
+		}
+
+		return true;
+
+
+		return (IsCounterClockwise() && !IsSelfIntersecting() && vertices.size() >= 3);
+	}
+
+	bool Polygon::IsCounterClockwise() const
+	{
+		return SignedArea() < 0;
+		return SignedArea() > 0.f; // positive area indicates counter-clockwise orientation
+	}
+
+	void Polygon::EnsureCounterClockwise() const
+	{
+		if (!IsCounterClockwise())
+		{
+			ThrowError("Polygon is not in counter-clockwise order, reversing vertices.");
+			//std::reverse(vertices.begin(), vertices.end());
+		}
+	}
+
+	float Polygon::SignedArea() const
+	{
+		float area = 0.f;
+		for (size_t i = 0; i < vertices.size(); ++i)
+		{
+			const glm::vec2& a = vertices[i];
+			const glm::vec2& b = vertices[(i + 1) % vertices.size()];
+			area += (b.x - a.x) * (b.y + a.y);
+		}
+		return area * 0.5f;
+	}
+
+	bool Polygon::IsSelfIntersecting() const
+	{
+		std::vector<Edge> edges = GetEdges();
+		size_t n = edges.size();
+		for (size_t i = 0; i < n; ++i)
+		{
+			for (size_t j = i + 1; j < n; ++j)
+			{
+				if (j == (i + 1) % n || j == (i + n - 1) % n)
+					continue; // skip adjacent edges
+
+				if (SegmentsIntersect(edges[i], edges[j]))
+					return true;
+			}
+		}
+		return false;
+	}
+
+
+	std::vector<Edge> Polygon::GetEdges() const
+	{
+		std::vector<Edge> edges;
+		for (size_t i = 0; i < vertices.size(); ++i)
+		{
+			glm::vec2 p1 = vertices[i];
+			glm::vec2 p2 = vertices[(i + 1) % vertices.size()];
+			edges.push_back({ p1, p2 });
+		}
+		return edges;
+	}
 
 } // namespace LittleEngine
