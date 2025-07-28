@@ -27,6 +27,8 @@ namespace LittleEngine::Graphics
 
 	}
 
+
+
 	void Camera::FollowSpring(const glm::vec2& target, float dt, float maxDistance, float stiffness, float damping)
 	{
 		if (stiffness < 0.f)
@@ -36,6 +38,7 @@ namespace LittleEngine::Graphics
 
 		if (damping < 0.f)		// for critical damping.
 			damping = 2 * glm::sqrt(stiffness);
+
 
 		// critically damped spring
 		glm::vec2 delta = position - target;			// anchor is target, strectched to position
@@ -53,6 +56,7 @@ namespace LittleEngine::Graphics
 
 
 	}
+
 
 	glm::mat4 Camera::GetProjectionMatrix() const
 	{

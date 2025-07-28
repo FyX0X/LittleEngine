@@ -44,24 +44,27 @@ namespace LittleEngine::Graphics
 	{
 		glDeleteFramebuffers(1, &m_fbo);
 		m_texture.Cleanup();
+		m_width = -1;
+		m_height = -1;
+		m_fbo = -1;
 	}
 
 #pragma endregion
 
 
-	void RenderTarget::Clear(Color color)
-	{
-		GLint fbo = 0;
-		glGetIntegerv(GL_FRAMEBUFFER_BINDING, &fbo);
-		if (fbo != m_fbo)
-		{
-			LogError("RenderTarget::Clear rendertarget was not bound.");
-			Bind();
-		}		
-		glClearColor(color.r, color.g, color.b, color.a);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		//Unbind();
-	}
+	//void RenderTarget::Clear(Color color)
+	//{
+	//	GLint fbo = 0;
+	//	glGetIntegerv(GL_FRAMEBUFFER_BINDING, &fbo);
+	//	if (fbo != m_fbo)
+	//	{
+	//		LogError("RenderTarget::Clear rendertarget was not bound.");
+	//		Bind();
+	//	}		
+	//	glClearColor(color.r, color.g, color.b, color.a);
+	//	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	//	//Unbind();
+	//}
 
 
 	void RenderTarget::Bind()

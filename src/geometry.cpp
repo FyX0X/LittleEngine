@@ -76,26 +76,26 @@ namespace LittleEngine
 
 	bool Polygon::IsValid() const
 	{
-		// temp: output for debugging
-		if (vertices.size() < 3)
-		{
-			LogWarning("Polygon is invalid: less than 3 vertices.");
-			return false;
-		}
+		//// temp: output for debugging
+		//if (vertices.size() < 3)
+		//{
+		//	LogWarning("Polygon is invalid: less than 3 vertices.");
+		//	return false;
+		//}
 
-		if (!IsCounterClockwise())
-		{
-			LogWarning("Polygon is in clockwise order.");
-			return false;
-		}
+		//if (!IsCounterClockwise())
+		//{
+		//	LogWarning("Polygon is in clockwise order.");
+		//	return false;
+		//}
 
-		if (IsSelfIntersecting())
-		{
-			LogWarning("Polygon is self-intersecting.");
-			return false;
-		}
+		//if (IsSelfIntersecting())
+		//{
+		//	LogWarning("Polygon is self-intersecting.");
+		//	return false;
+		//}
 
-		return true;
+		//return true;
 
 
 		return (IsCounterClockwise() && !IsSelfIntersecting() && vertices.size() >= 3);
@@ -103,16 +103,15 @@ namespace LittleEngine
 
 	bool Polygon::IsCounterClockwise() const
 	{
-		return SignedArea() < 0;
-		return SignedArea() > 0.f; // positive area indicates counter-clockwise orientation
+		return SignedArea() < 0.f; // negative area indicates counter-clockwise orientation
 	}
 
-	void Polygon::EnsureCounterClockwise() const
+	void Polygon::EnsureCounterClockwise()
 	{
 		if (!IsCounterClockwise())
 		{
-			ThrowError("Polygon is not in counter-clockwise order, reversing vertices.");
-			//std::reverse(vertices.begin(), vertices.end());
+			std::reverse(vertices.begin(), vertices.end());
+			LogWarning("Polygon::EnsureClockwise: reversing vertices.");
 		}
 	}
 

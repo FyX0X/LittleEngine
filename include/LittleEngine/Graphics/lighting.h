@@ -2,8 +2,15 @@
 
 
 #include <LittleEngine/geometry.h>
-
+#include <LittleEngine/Graphics/shader.h>
+#include <LittleEngine/Graphics/render_target.h>
+#include <LittleEngine/Graphics/camera.h>
+#include <LittleEngine/Graphics/color.h>
+#include <LittleEngine/Graphics/renderer.h>
+#include <memory>
 #include <vector>
+#include <glm/glm.hpp>
+#include <glad/glad.h>
 
 namespace LittleEngine::Graphics
 {
@@ -29,6 +36,90 @@ namespace LittleEngine::Graphics
 	// Returns a vector containing the vertices of the shadow triangles ready for rendering.
 	std::vector<glm::vec2> GetShadowTriangles(const std::vector<ShadowQuad>& shadowQuads);
 
+	class LightSystem
+	{
+	public:
+		LightSystem() {};
+		~LightSystem() { Shutdown(); }
 
+		LightSystem(LightSystem& other) = delete;
+		LightSystem(LightSystem&& other) = delete;
+		LightSystem operator=(LightSystem other) = delete;
+		LightSystem operator=(LightSystem& other) = delete;
+		LightSystem operator=(LightSystem&& other) = delete;
+
+		void Initialize(size_t maxQuadCount = 1000);
+		void Shutdown();
+
+#pragma region Light and shadow rendering
+
+		void RenderLighting(Renderer* renderer, RenderTarget* target, bool enableShadows = true, const Color& color = Colors::Black);
+
+
+#pragma endregion
+
+
+		// Updates the lights and obstacles in the scene.
+#pragma region LightSource management
+
+		LightSource* CreateLightSource(glm::vec2 pos, glm::vec3 color, float intensity, float radius);
+
+		// Deletes a light source from the scene.
+		// Returns true if the light source was found and deleted, false otherwise.
+		// IMPORTANT: the lightSource pointer becomes invalid after deletion, do not use it anymore!
+		bool DeleteLightSource(LightSource* lightSource);
+
+		/**
+		 * Deletes all light sources in the scene.
+		 * IMPORTANT: after this call, all light source pointers become invalid, do not use them anymore!
+		 */
+		void ClearLightSources() { m_lightSources.clear(); }
+		const std::vector<std::unique_ptr<LightSource>>& GetLightSources() const { return m_lightSources; }
+#pragma endregion
+
+#pragma region Obstacle management
+
+		Polygon* CreateObstacle(std::vector<glm::vec2> vertices);
+
+		// Deletes an obstacle from the scene.
+		// Returns true if the obstacle was found and deleted, false otherwise.
+		// IMPORTANT: the Polygon pointer becomes invalid after deletion, do not use it anymore!
+		bool DeleteObstacle(Polygon* polygon);
+
+		/**
+		 * Deletes all obstacles in the scene.
+		 * IMPORTANT: after this call, all obstacles pointers become invalid, do not use them anymore!
+		 */
+		void ClearObstacles() { m_obstacles.clear(); }
+		const std::vector<std::unique_ptr<Polygon>>& GetObstacles() const { return m_obstacles; }
+
+#pragma endregion
+
+	private:
+
+		void BatchShadows();
+
+		bool m_initialized = false; // true if the light system is initialized
+
+		size_t m_maxQuadCount = -1;
+
+		// unique_ptrs to own the light sources and obstacles
+		std::vector<std::unique_ptr<LightSource>> m_lightSources; // List of light sources in the scene
+		std::vector<std::unique_ptr<Polygon>> m_obstacles; // List of obstacles in the scene
+
+		// light and shadows rendering
+
+		GLuint shadowVAO = 0;
+		GLuint shadowVBO = 0;
+
+		Shader m_shadowShader = {};
+		Shader m_lightShader = {};
+
+		RenderTarget m_tempLightFBO = {};
+
+		std::vector<glm::vec2> m_shadowVertices; // vertices for shadow rendering
+
+
+	};
 
 }

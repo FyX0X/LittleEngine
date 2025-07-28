@@ -19,6 +19,58 @@
 namespace LittleEngine::Graphics
 {
 
+	const std::string fullQuadVertexShader = R"(
+		#version 330 core
+		layout(location = 0) in vec2 aPos;
+		layout(location = 1) in vec2 aTexCoord;
+
+		out vec2 TexCoords;
+
+		void main()
+		{
+			TexCoords = aTexCoord;
+			gl_Position = vec4(aPos, 0.0, 1.0);
+		}
+    )";
+
+	const std::string blitImageFragmentShader = R"(
+		#version 330 core
+
+		out vec4 FragColor;
+		in vec2 TexCoords; // Texture coordinates for the fragment
+
+		uniform sampler2D uTexture; // Texture to sample from
+
+		void main()
+		{
+			FragColor = texture(uTexture, TexCoords); // Sample the texture at the given coordinates
+		}
+    )";
+
+	const std::string mergeFragmentShader = R"(
+		#version 330 core
+		in vec2 TexCoords;
+		out vec4 FragColor;
+
+		uniform sampler2D sceneTexture;
+		uniform sampler2D lightTexture;
+
+		void main()
+		{
+			vec3 sceneColor = texture(sceneTexture, TexCoords).rgb;
+			vec3 lightColor = texture(lightTexture, TexCoords).rgb;
+
+			// Additive blending of light on scene
+			vec3 finalColor = sceneColor * lightColor;
+
+			// Optional: tone mapping or clamp
+			finalColor = clamp(finalColor, 0.0, 1.0);
+
+			FragColor = vec4(finalColor, 1.0);
+		}
+    )";
+
+
 	Texture Renderer::s_defaultTexture = Texture();
 	Font Renderer::s_defaultFont = Font();
 
@@ -88,8 +140,20 @@ namespace LittleEngine::Graphics
 
 		UpdateWindowSize(size);
 
+
+		m_blitShader.Create(fullQuadVertexShader, blitImageFragmentShader, false);
+		m_blitShader.Use();
+		m_blitShader.SetInt("uTexture", 0); // set texture sampler to 0
+
+		m_mergeLightSceneShader.Create(fullQuadVertexShader, mergeFragmentShader, false);
+		m_mergeLightSceneShader.Use();
+		m_mergeLightSceneShader.SetInt("sceneTexture", 0); // set scene texture sampler to 0
+		m_mergeLightSceneShader.SetInt("lightTexture", 1); // set light texture sampler to 1
+
 		shader.CreateDefault();
-		shader.Use();
+		shader.Use();		// important to use shader at end of initialization.
+
+		SetBlendMode(BlendMode::Alpha);
 
 	}
 
@@ -377,6 +441,16 @@ namespace LittleEngine::Graphics
 		font.Unbind();
 	}
 
+	void Renderer::Clear(const Color& color)
+	{
+		if (!m_isInitialized)
+			ThrowError("RENDERER::CLEAR : library was not initialized.");
+
+		glClearColor(color.r, color.g, color.b, color.a);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		
+	}
+
 #pragma endregion
 
 #pragma region Frame
@@ -388,33 +462,29 @@ namespace LittleEngine::Graphics
 			Flush();	// flush to previous render Target.
 		}
 
+		if (m_renderTarget == target)	// already binded.
+			return;
+
 		m_renderTarget = target;
+		int width, height;
 		if (target)
 		{
 			target->Bind(); // bind the new target
+			width = target->GetSize().x;
+			height = target->GetSize().y;
 		}
 		else
 		{
 			BindScreen(); // bind the default framebuffer (screen)
-		}
-		int width, height;
-		if (target == nullptr)	// window
-		{
 			width = m_width;
 			height = m_height;
-		}
-		else 
-		{
-			width = target->GetSize().x;
-			height = target->GetSize().y;
 		}
 		glViewport(0, 0, width, height); // reset viewport to target size
 	}
 
 	void Renderer::BeginFrame()
 	{
-		glClearColor(Colors::ClearColor.r, Colors::ClearColor.g, Colors::ClearColor.b, Colors::ClearColor.a);
-		glClear(GL_COLOR_BUFFER_BIT);
+		Clear(); // clear the current render target
 		
 		
 		ClearDrawQueue();
@@ -429,6 +499,8 @@ namespace LittleEngine::Graphics
 
 	void Renderer::SaveScreenshot(RenderTarget* target, const std::string& name)
 	{
+		RenderTarget* old = GetRenderTarget();
+
 		int width, height;
 		int imageTarget;
 
@@ -436,13 +508,14 @@ namespace LittleEngine::Graphics
 		{
 			width = m_width;
 			height = m_height;
+			SetRenderTarget();
 			glReadBuffer(GL_BACK);
 		}
 		else 
 		{
 			width = target->GetSize().x;
 			height = target->GetSize().y;
-			target->Bind();
+			SetRenderTarget(target);
 			glReadBuffer(GL_COLOR_ATTACHMENT0);
 		}
 
@@ -450,23 +523,46 @@ namespace LittleEngine::Graphics
 
 		glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, pixels.data());
 
-		if (target != nullptr)
-			target->Unbind();
 
 		// swap pixels because opengl has bottom left as origin, instead of top left.
 		FlipBitmapVertically(pixels.data(), width, height, 4);
 
 		Storage::EnsureDirectoryExists("screenshots");
 
-		std::string path = Storage::GetNextFreeFilepath("screenshots", "screenshot" + name, ".png");
+		std::string path = Storage::GetNextFreeFilepath("screenshots", name, ".png");
 
 
 		stbi_write_png(path.c_str(), width, height, 4, pixels.data(), width * 4);
 
-
+		SetRenderTarget(old);
 		
 	}
 	
+	void Renderer::SetBlendMode(BlendMode mode)
+	{
+		switch (mode)
+		{
+			case BlendMode::None:
+				glDisable(GL_BLEND);
+				break;
+			case BlendMode::Alpha:
+				glEnable(GL_BLEND);
+				glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+				glBlendEquation(GL_FUNC_ADD);
+				break;
+			case BlendMode::Additive:
+				glEnable(GL_BLEND);
+				glBlendFunc(GL_ONE, GL_ONE); // Additive blending
+				glBlendEquation(GL_FUNC_ADD);
+				break;
+			case BlendMode::Multiply:
+				glEnable(GL_BLEND);
+				glBlendFunc(GL_DST_COLOR, GL_ZERO); // Multiply blending
+				glBlendEquation(GL_FUNC_ADD);
+				break;
+		}
+	}
+
 	void Renderer::Flush()
 	{
 		if (!internal::g_initialized)
@@ -496,10 +592,12 @@ namespace LittleEngine::Graphics
 			return;
 		}
 
-		if (m_renderTarget == nullptr)	// draw to screen
-		{
-			glViewport(0, 0, m_width, m_height);
-		}
+
+
+		//if (m_renderTarget == nullptr)	// draw to screen
+		//{
+		//	glViewport(0, 0, m_width, m_height);
+		//}
 		//else
 		//{
 		//	glm::ivec2 size = m_renderTarget->GetSize();
@@ -508,7 +606,7 @@ namespace LittleEngine::Graphics
 		//}
 
 		// Bind shader
-		//shader.Use();
+		shader.Use();
 
 		// initializes uniform variables
 		shader.SetMat4("view", m_camera->GetViewMatrix());
@@ -580,6 +678,7 @@ namespace LittleEngine::Graphics
 
 	void Renderer::RenderBatch()
 	{
+
 
 		// binding vertex array
 		glBindVertexArray(m_VAO);
@@ -669,6 +768,36 @@ namespace LittleEngine::Graphics
 		glBindVertexArray(m_fullscreenVAO);
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 		glBindVertexArray(0);
+	}
+
+	void Renderer::BlitImage(const Texture& texture)
+	{
+		if (texture.id == 0) {
+			LogError("Renderer::BlitImage : Texture not loaded.");
+			return;
+		}
+		
+		m_blitShader.Use(); // Use the blit shader
+		//m_blitShader.SetInt("uTexture", 0); // Set the texture sampler to 0 NO need to set it again, already set in Initialize
+		texture.Bind(0); // Bind texture to slot 0
+		
+		FlushFullscreenQuad(); // Render the fullscreen quad with the bound texture
+
+		texture.Unbind(0); // Unbind the texture after rendering
+	}
+
+	void Renderer::MergeLightScene(const Texture& scene, const Texture& light)
+	{
+		if (scene.id == 0 || light.id == 0) {
+			LogError("Renderer::MergeLightScene : Scene or Light texture not loaded.");
+			return;
+		}
+		m_mergeLightSceneShader.Use(); // Use the merge shader
+		scene.Bind(0); // Bind scene texture to slot 0
+		light.Bind(1); // Bind light texture to slot 1
+		FlushFullscreenQuad(); // Render the fullscreen quad with the bound textures
+
+		shader.Use(); // Reset to default shader after merging
 	}
 
 #pragma endregion

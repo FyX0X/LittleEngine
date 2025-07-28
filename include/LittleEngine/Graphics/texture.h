@@ -22,7 +22,7 @@ namespace LittleEngine::Graphics
 
 
 		void Bind(const unsigned int sample = 0) const;
-		void Unbind() const;
+		void Unbind(const unsigned int sample = 0) const;
 
 		void Cleanup();
 

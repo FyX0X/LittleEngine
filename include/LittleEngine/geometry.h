@@ -43,7 +43,7 @@ namespace LittleEngine
 
 		bool IsValid() const;
 		bool IsCounterClockwise() const;
-		void EnsureCounterClockwise() const;
+		void EnsureCounterClockwise();
 		float SignedArea() const;
 		bool IsSelfIntersecting() const;
 

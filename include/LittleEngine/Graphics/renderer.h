@@ -52,14 +52,20 @@ namespace LittleEngine::Graphics
 		 * @param: target: The render target, (defaults to the screen if = nullptr) 
 		 */
 		void SetRenderTarget(RenderTarget* target = nullptr);
+		RenderTarget* GetRenderTarget() { return m_renderTarget; }
 		void BeginFrame();
 		void EndFrame();
 
-
+		// flushes a fullscreen quad to the current render target
+		// uses the current shader set by the user (shader.Use())
 		void FlushFullscreenQuad();
 
+		void BlitImage(const Texture& texture);
 
-		void SaveScreenshot(RenderTarget* target = nullptr, const std::string& name = "");
+		void MergeLightScene(const Texture& scene, const Texture& light);
+
+
+		void SaveScreenshot(RenderTarget* target = nullptr, const std::string& name = "screenshot");
 
 #pragma region DRAW RECT
 
@@ -101,7 +107,6 @@ namespace LittleEngine::Graphics
 
 #pragma endregion
 
-
 #pragma region DRAW TEXT
 
 		void DrawString(const std::string& text, const glm::vec2 pos, Color color = Colors::White, float scale = 1.f) 
@@ -113,14 +118,26 @@ namespace LittleEngine::Graphics
 
 #pragma endregion
 
+		// Clears the current render target with the given color
+		void Clear(const Color& color = Colors::ClearColor);
+
 		int GetQuadCount() { return m_quadCount; }
 
+		enum class BlendMode {
+			None,
+			Alpha,
+			Additive,
+			Multiply
+		};
+
+		void SetBlendMode(BlendMode mode);
 
 
 		//Camera camera = {};
 		Shader shader;
 
 		void SetCamera(const Camera& camera) { m_camera = &camera; }
+		const Camera& GetCamera() const { return *m_camera; }
 
 		void Flush();
 
@@ -168,6 +185,9 @@ namespace LittleEngine::Graphics
 
 		unsigned int m_fullscreenVAO = 0;
 		unsigned int m_fullscreenVBO = 0;
+
+		Shader m_blitShader = {};
+		Shader m_mergeLightSceneShader = {};
 
 	};
 

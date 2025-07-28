@@ -20,15 +20,15 @@ namespace LittleEngine::Graphics
 		void Bind();
 		void Unbind();
 
-		void Clear(Color color = Colors::Black);
+		//void Clear(Color color = Colors::Black);
 		
 		const Texture& GetTexture() { return m_texture; }
 
 		glm::ivec2 GetSize() { return glm::ivec2(m_width, m_height); }
 
 	private:
-		Texture m_texture;
-		GLuint m_fbo;
+		Texture m_texture = {};
+		GLuint m_fbo = -1;
 		int m_width = -1;
 		int m_height = -1;
 		// GLuint m_depthBuffer; TODO add later maybe.

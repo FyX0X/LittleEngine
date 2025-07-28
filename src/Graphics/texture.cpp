@@ -196,8 +196,9 @@ namespace LittleEngine::Graphics
         }*/
     }
 
-    void Texture::Unbind() const
+    void Texture::Unbind(const unsigned int sample) const
     {
+        glActiveTexture(GL_TEXTURE0 + sample);
         glBindTexture(GL_TEXTURE_2D, 0);
     }
 

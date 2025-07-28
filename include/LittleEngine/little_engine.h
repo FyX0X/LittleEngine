@@ -28,6 +28,7 @@
 #include "LittleEngine/Graphics/shader.h"
 #include "LittleEngine/Graphics/texture.h"
 #include "LittleEngine/Graphics/tilemap_renderer.h"
+#include "LittleEngine/Graphics/lighting.h"
 #include "LittleEngine/Input/input.h"
 #include "LittleEngine/Audio/audio.h"
 #include "LittleEngine/Audio/sound.h"
@@ -53,9 +54,11 @@
  * 
  * fix flush to allow better polygon instead of mutliple quads.
  * 
+ * add blit fullscreen quad to render target.
+ * 
  * add render target and fbo. ok but not good yet...
  * maybe still improve. => current projection maybe strange ... because not "pixel unit".
- * draw line
+ * 
  * draw circle ?
  * draw particle ?
  * optimise renderer flush and batching.	YES -> currently pushing all vertices and indices to flush then tp batch, doing two times the work
@@ -69,6 +72,8 @@
  * Depth/stencil Buffer
  * bloom and light source.
  * 
+ draw line ok
+ * 
  * renderer: Flush vs endframe not clear;
  * 
  * write FBO / screen to png ok
@@ -78,8 +83,12 @@
  *	
  * INPUT:
  * 
+ * scroll
+ * mouse get pos ok
+ * picking ??
+ * 
  * stored keys ok
- * action removed
+ * action removed ok
  * Commands ok
  * callbacks ok
  * InputAxis ok
@@ -88,9 +97,6 @@
  * 
  * bind same key to multiple action ok
  * 
- * scroll
- * mouse get pos 
- * picking ??
  * 
  * 
  * AUDIO:
@@ -101,6 +107,8 @@
  * play same sound multiple time 
  * positionnal audio ok
  * 
+ * 
+ * fixed timestep for update ok
  * 
  */
 

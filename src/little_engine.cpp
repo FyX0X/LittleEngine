@@ -61,6 +61,8 @@ namespace LittleEngine
 {
 	static GLFWwindow* s_window = {};
 	static ResizeCallback s_windowResizeCallback = nullptr;
+	static const float s_updateTimeStep = 1.f / 60.f; // update step in seconds (60 FPS)
+	float accumulatedTime = 0.f; // accumulated time for update steps
 
 #pragma region function pre definition;
 	namespace
@@ -155,10 +157,6 @@ namespace LittleEngine
 #pragma endregion
 
 
-		glEnable(GL_BLEND);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-
 
 #pragma region ImGui setup
 
@@ -181,6 +179,7 @@ namespace LittleEngine
 #endif
 #pragma endregion
 
+		glDisable(GL_DEPTH_TEST);	// disable depth test by default
 
 		// default vsync:
 		SetVsync(config.vsync);
@@ -266,7 +265,7 @@ namespace LittleEngine
 
 
 			//// Sleep if we're early
-			//const float targetFrameTime = 1.f / 400.f;
+			//const float targetFrameTime = 1.f / 5.f;
 			//std::chrono::duration<float> remaining = std::chrono::duration<float>(targetFrameTime) - delta;
 			//if (remaining.count() > 0.f)
 			//{
@@ -283,7 +282,14 @@ namespace LittleEngine
 
 			lastTime = currentTime;
 
-			update(delta.count());
+			// Update game at fixed time step.
+			accumulatedTime += delta.count();
+			while (accumulatedTime >= s_updateTimeStep)
+			{
+				accumulatedTime -= s_updateTimeStep;
+				// Update the game state
+				update(s_updateTimeStep);
+			}
 
 			render();
 
