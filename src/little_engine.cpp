@@ -62,7 +62,8 @@ namespace LittleEngine
 	static GLFWwindow* s_window = {};
 	static ResizeCallback s_windowResizeCallback = nullptr;
 	static const float s_updateTimeStep = 1.f / 60.f; // update step in seconds (60 FPS)
-	float accumulatedTime = 0.f; // accumulated time for update steps
+	static float accumulatedTime = 0.f; // accumulated time for update steps
+	static float s_fps = 0.f; // frames per second
 
 #pragma region function pre definition;
 	namespace
@@ -193,7 +194,7 @@ namespace LittleEngine
 		// create default shader
 		Graphics::Shader::Initialize();
 		Graphics::Font::Initialize();
-		Input::Initialize(s_window);
+		Input::Initialize(s_window, LittleEngine::GetWindowSize());
 
 		return 0;
 
@@ -283,6 +284,7 @@ namespace LittleEngine
 			lastTime = currentTime;
 
 			// Update game at fixed time step.
+			s_fps = 1.f / delta.count(); // update fps
 			accumulatedTime += delta.count();
 			while (accumulatedTime >= s_updateTimeStep)
 			{
@@ -292,6 +294,10 @@ namespace LittleEngine
 			}
 
 			render();
+
+
+			// finalize input (for previous key state)
+			Input::UpdatePreviousInputState();
 
 
 #pragma region ImGui Render
@@ -328,6 +334,11 @@ namespace LittleEngine
 		int w, h;
 		glfwGetWindowSize(s_window, &w, &h);
 		return glm::ivec2(w, h);
+	}
+
+	float GetFPS()
+	{
+		return s_fps;
 	}
 
 #pragma endregion

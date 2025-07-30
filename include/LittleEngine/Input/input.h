@@ -35,10 +35,12 @@ namespace LittleEngine::Input
 	};
 
 
-	void Initialize(GLFWwindow* window);
+	void Initialize(GLFWwindow* window, const glm::ivec2& windowSize);
 	void Shutdown();
 
 	void UpdateInputState();
+	void UpdatePreviousInputState();
+	void UpdateWindowSize(int w, int h);
 
 	InputEventType GetInputEventType(bool previous, bool current);
 	void CallCommand(Command* cmd, InputEventType type);
@@ -46,12 +48,18 @@ namespace LittleEngine::Input
 
 	void ResetKeyState();
 
+	// Returns the current mouse position in pixels
+	// (0, 0) is the bottom left corner of the window.
 	glm::ivec2 GetMousePosition();
+	
 
 	float GetAxis(const std::string& name);
 	bool IsKeyDown(KeyCode key);
 	bool IsKeyPressed(KeyCode key);
 	bool IsKeyReleased(KeyCode key);
+	bool IsMouseButtonDown(MouseButton mb);
+	bool IsMouseButtonPressed(MouseButton mb);
+	bool IsMouseButtonReleased(MouseButton mb);
 
 
 	void RegisterAxis(const std::string& name);

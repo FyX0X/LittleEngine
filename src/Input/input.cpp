@@ -44,6 +44,9 @@ namespace LittleEngine::Input
 	static int s_mouseX = 0;
 	static int s_mouseY = 0;
 
+	static int s_windowWidth = 0;
+	static int s_windowHeight = 0;
+
 	// virtual axis
 	// One vector<string> per keys, allows for multiple axis binded to same key.
 	static std::array<std::vector<std::string>, MaxKeyCode> s_posKeyAxisBindings{};
@@ -54,7 +57,7 @@ namespace LittleEngine::Input
 
 #pragma region Initialization management
 
-	void Initialize(GLFWwindow* window)
+	void Initialize(GLFWwindow* window, const glm::ivec2& windowSize)
 	{
 
 		glfwSetKeyCallback(window, key_callback);
@@ -66,7 +69,7 @@ namespace LittleEngine::Input
 
 		ResetKeyState();	// just to be sure.
 
-
+		UpdateWindowSize(windowSize.x, windowSize.y);
 	}
 
 
@@ -144,11 +147,21 @@ namespace LittleEngine::Input
 				value = -1.f;
 		}
 
-		// for next frame
-		s_previousKeyState = s_currentKeyState;
-		s_previousMouseButtonState = s_currentMouseButtonState;
+
 
 		
+	}
+
+	void UpdatePreviousInputState()
+	{		// for next frame
+		s_previousKeyState = s_currentKeyState;
+		s_previousMouseButtonState = s_currentMouseButtonState;
+	}
+
+	void UpdateWindowSize(int w, int h)
+	{
+		s_windowWidth = w;
+		s_windowHeight = h;
 	}
 
 #pragma endregion
@@ -272,6 +285,20 @@ namespace LittleEngine::Input
 		return !s_currentKeyState[key] && s_previousKeyState[key];
 	}
 
+	bool IsMouseButtonDown(MouseButton mb)
+	{
+		return s_currentMouseButtonState[mb];
+	}
+
+	bool IsMouseButtonPressed(MouseButton mb)
+	{
+		return s_currentMouseButtonState[mb] && !s_previousMouseButtonState[mb];
+	}
+
+	bool IsMouseButtonReleased(MouseButton mb)
+	{
+		return !s_currentMouseButtonState[mb] && s_previousMouseButtonState[mb];
+	}
 
 #pragma endregion
 
@@ -372,7 +399,7 @@ namespace LittleEngine::Input
 		// where (0, 0) is the top left corner and measured in pixels.
 
 		s_mouseX = static_cast<int>(xpos);
-		s_mouseY = static_cast<int>(ypos);
+		s_mouseY = s_windowHeight - static_cast<int>(ypos);
 	}
 
 	void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)

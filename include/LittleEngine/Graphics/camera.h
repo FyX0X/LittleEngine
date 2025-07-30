@@ -24,7 +24,7 @@ namespace LittleEngine::Graphics
 		float zoom = 1.f;
 
 		// needs to be updated when the window size changes.
-		glm::vec2 viewportSize = { -1.f, -1.f };	// viewport size, default is -1, -1 (no viewport set)
+		glm::ivec2 viewportSize = { -1, -1 };	// viewport size, default is -1, -1 (no viewport set)
 		bool centered = false;	// if true, the camera will be centered on the viewport, otherwise it will be at the bottom left corner.
 
 		void Reset() { *this = Camera{}; }

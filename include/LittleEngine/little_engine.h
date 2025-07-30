@@ -32,6 +32,8 @@
 #include "LittleEngine/Input/input.h"
 #include "LittleEngine/Audio/audio.h"
 #include "LittleEngine/Audio/sound.h"
+#include "LittleEngine/Graphics/render_target.h"
+#include "LittleEngine/UI/ui_system.h"
 
 #include "LittleEngine/geometry.h"
 
@@ -41,6 +43,9 @@
 
 /**		TODO LIST:
  *
+ * UI :
+ * 9 slice
+ * 
  * GRAPHICS:
  * 
  * current shader breaks on linux, seems to not respect correct glsl syntax but works on windows due to 
@@ -82,6 +87,8 @@
  * Querry FPS
  *	
  * INPUT:
+ * 
+ * use custom button struct instead of GLFW keycode.
  * 
  * scroll
  * mouse get pos ok
@@ -139,6 +146,8 @@ namespace LittleEngine
 
 	// Gets the viewport size.
 	glm::ivec2 GetWindowSize();
+
+	float GetFPS();
 
 
 	using ResizeCallback = std::function<void(int width, int height)>;
