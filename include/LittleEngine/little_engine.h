@@ -48,6 +48,8 @@
  * 
  * GRAPHICS:
  * 
+ * add sprite (texture + uv)
+ * 
  * current shader breaks on linux, seems to not respect correct glsl syntax but works on windows due to 
  *		leniant implementation on intel drivers: texture arrays not used correctly.		
  *		either find new implementation

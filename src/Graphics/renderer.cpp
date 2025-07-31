@@ -289,8 +289,6 @@ namespace LittleEngine::Graphics
 		m_quadCount++;
 
 	}
-
-
 	
 	void Renderer::DrawPolygon(const Polygon& polygon, const Color& color)
 	{
@@ -393,7 +391,6 @@ namespace LittleEngine::Graphics
 			DrawLine(e, width, color);
 		}
 	}
-
 
 	void Renderer::DrawString(const std::string& text, const glm::vec2 pos, const Font& font, Color color, float scale)
 	{
