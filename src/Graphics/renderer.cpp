@@ -446,6 +446,12 @@ namespace LittleEngine::Graphics
 		if (!m_isInitialized)
 			ThrowError("RENDERER::CLEAR : library was not initialized.");
 
+		if (m_width == 0 || m_height == 0)
+		{
+			LogWarning("Renderer::Clear: framebuffer size = 0 => skipping clear.");
+			return;
+		}
+
 		glClearColor(color.r, color.g, color.b, color.a);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		
@@ -589,6 +595,14 @@ namespace LittleEngine::Graphics
 		if (m_camera == nullptr)
 		{
 			LogError("Renderer::Flush : Camera not set.");
+			return;
+		}
+
+
+		if (m_width == 0 || m_height == 0)
+		{
+			LogWarning("Renderer::Flush: size is zero : (" + std::to_string(m_width) + ", " +std::to_string(m_height) + "), skipping flush.");
+			ClearDrawQueue();
 			return;
 		}
 
