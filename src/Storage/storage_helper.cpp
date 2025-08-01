@@ -6,9 +6,12 @@
 
 namespace LittleEngine::Storage
 {
+	//bool FileExists(const std::filesystem::path& path)
+	//{
+	//	return std::filesystem::exists(path);
+	//}
 
-
-	void EnsureDirectoryExists(const std::string& path)
+	void EnsureDirectoryExists(const std::filesystem::path& path)
 	{
 		// check is screenshot folder exists
 		if (!std::filesystem::exists("screenshots"))
@@ -44,6 +47,62 @@ namespace LittleEngine::Storage
 		LogWarning("Storage::GetNextFreeFilePath: too many iterations to find new available filename: overwriting: " + path.string());
 		return path.string();
 	}
+
+	bool WriteTextFile(const std::filesystem::path& path, const std::string& text)
+	{
+		std::ofstream out(path);
+		if (!out.is_open())
+			return false;
+	
+		out << text;
+		return out.good();
+	}
+
+	bool WriteBinaryFile(const std::filesystem::path& path, const std::vector<char>& data)
+	{
+		std::ofstream out(path, std::ios::binary);
+		if (!out.is_open())
+			return false;
+
+		out.write(data.data(), static_cast<std::streamsize>(data.size()));
+		return out.good();
+	}
+
+	bool LoadTextFile(const std::filesystem::path& path, std::string* target)
+	{
+		std::ifstream in(path);
+		if (!in.is_open())
+		{	
+			target = nullptr;
+			return false;
+		}
+			
+
+		*target = std::string(std::istreambuf_iterator<char>(in),
+			std::istreambuf_iterator<char>());
+	}
+
+	bool LoadBinaryFile(const std::filesystem::path& path, std::vector<char>* target)
+	{
+		std::ifstream in(path, std::ios::binary | std::ios::ate);		// open at end of file
+		if (!in.is_open())
+			target = nullptr;
+			return false;
+
+
+		std::streamsize size = in.tellg();		// get size of file
+		in.seekg(0, std::ios::beg);				// go back to beginning
+
+		target->reserve(size);
+		if (!in.read(target->data(), size))
+			return false;
+		return true;
+
+
+	}
+
+
+
 
 
 

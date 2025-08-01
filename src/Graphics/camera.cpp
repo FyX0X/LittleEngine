@@ -48,13 +48,31 @@ namespace LittleEngine::Graphics
 		position += velocity * dt;
 
 		// check max distance
-		float distance = glm::length(delta);
-		if (distance > maxDistance)
-		{
-			position = target + glm::normalize(delta) * maxDistance;
-		}
+		//float distance = glm::length(delta);
+		//if (distance > maxDistance)
+		//{
+		//	std::cout << "Camera::FollowSpring: max distance exceeded: " << distance << " > " << maxDistance << std::endl;
+		//	position = target + glm::normalize(delta) * maxDistance;
+		//}
 
 
+	}
+
+	glm::vec2 Camera::ScreenToWorld(const glm::vec2& screenPos) const
+	{
+
+		glm::vec2 ndc;
+		ndc.x = (2.0f * screenPos.x) / viewportSize.x - 1.0f;
+		ndc.y = ((2.0f * screenPos.y) / viewportSize.y - 1.0f);
+		// Homogeneous clip space (z=0, w=1 for 2D)
+		glm::vec4 clipPos(ndc, 0.0f, 1.0f);
+		// Compute inverse view-projection
+		glm::mat4 invViewProj = glm::inverse(GetProjectionMatrix() * GetViewMatrix());
+		// Transform to world space
+		glm::vec4 worldPos = invViewProj * clipPos;
+
+		return glm::vec2(worldPos.x, worldPos.y) / worldPos.w; // divide by w to get the correct position
+		
 	}
 
 
