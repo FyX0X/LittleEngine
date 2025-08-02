@@ -25,6 +25,6 @@ namespace LittleEngine::Storage
 
 	bool WriteTextFile(const std::filesystem::path& path, const std::string& text);
 	bool WriteBinaryFile(const std::filesystem::path& path, const std::vector<char>& data);
-	bool LoadTextFile(const std::filesystem::path& path, std::string* target);
-	bool LoadBinaryFile(const std::filesystem::path& path, std::vector<char>* target);
+	bool ReadTextFile(const std::filesystem::path& path, std::string* target);
+	bool ReadBinaryFile(const std::filesystem::path& path, std::vector<char>* target);
 }

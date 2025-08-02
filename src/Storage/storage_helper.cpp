@@ -68,7 +68,7 @@ namespace LittleEngine::Storage
 		return out.good();
 	}
 
-	bool LoadTextFile(const std::filesystem::path& path, std::string* target)
+	bool ReadTextFile(const std::filesystem::path& path, std::string* target)
 	{
 		std::ifstream in(path);
 		if (!in.is_open())
@@ -80,9 +80,10 @@ namespace LittleEngine::Storage
 
 		*target = std::string(std::istreambuf_iterator<char>(in),
 			std::istreambuf_iterator<char>());
+		return in.good();
 	}
 
-	bool LoadBinaryFile(const std::filesystem::path& path, std::vector<char>* target)
+	bool ReadBinaryFile(const std::filesystem::path& path, std::vector<char>* target)
 	{
 		std::ifstream in(path, std::ios::binary | std::ios::ate);		// open at end of file
 		if (!in.is_open())

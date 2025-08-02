@@ -579,7 +579,7 @@ namespace LittleEngine::Graphics
 
 		if (m_vertices.empty() || m_indices.empty())
 		{
-			LogWarning("Renderer::Flush : Nothing to draw!");
+			//LogWarning("Renderer::Flush : Nothing to draw!");
 			return;
 		}
 
