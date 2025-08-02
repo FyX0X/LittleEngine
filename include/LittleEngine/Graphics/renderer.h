@@ -70,6 +70,10 @@ namespace LittleEngine::Graphics
 #pragma region DRAW RECT
 
 		// Render functions
+		void DrawRect(const Rect& rect, const Sprite& sprite, const Color& color = Colors::White)
+		{
+			DrawRect(rect, sprite.texture, color, sprite.uvs);
+		}
 		void DrawRect(const Rect& rect, const Color& color = Colors::White)
 		{
 			Color colors[4] = { color, color, color, color };
