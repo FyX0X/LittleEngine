@@ -116,6 +116,9 @@ namespace LittleEngine
 		// enable more debugging
 		glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, true);
 
+		if (config.maximized)
+			glfwWindowHint(GLFW_MAXIMIZED, GLFW_TRUE);
+
 
 #ifdef __APPLE__
 		glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);

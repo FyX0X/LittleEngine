@@ -131,6 +131,7 @@ namespace LittleEngine
 		std::string title = "LittleEngine Game";
 		int windowWidth = 800;
 		int windowHeight = 600;
+		bool maximized = false; // if true, the window will be maximized on startup
 		bool vsync = true;
 		std::string iconPath = ""; // path to the application icon, can be empty
 	};
