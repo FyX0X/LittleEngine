@@ -25,6 +25,7 @@ namespace LittleEngine::Audio
 		void Shutdown();
 
 		void Play();
+		bool IsPlaying() const;
 
 		void SetVolume(float volume);
 		void SetPitch(float pitch);

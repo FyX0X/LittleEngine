@@ -55,6 +55,11 @@ namespace LittleEngine::Audio
 
 #pragma endregion
 
+	bool Sound::IsPlaying() const
+	{
+		return ma_sound_is_playing(&m_sound);
+	}
+
 #pragma region Sound Modifiers
 
 	void Sound::SetVolume(float volume)
