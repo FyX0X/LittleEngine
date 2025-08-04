@@ -22,6 +22,7 @@ namespace LittleEngine::UI
 		inline bool IsClicked() const { return m_isClicked; }
 
 		inline void SetEnabled(bool enabled) { m_enabled = enabled; }
+		inline bool IsEnabled() const { return m_enabled; }
 
 
 

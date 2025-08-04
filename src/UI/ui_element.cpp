@@ -34,7 +34,7 @@ namespace LittleEngine::UI
 
 	void UILabel::Draw(Graphics::Renderer* renderer) const
 	{
-		renderer->DrawString(m_text, m_position + glm::vec2(m_fontSize * 0.1f, m_fontSize * 1.1f), Graphics::Colors::Black, m_fontSize);
+		renderer->DrawString(m_text, m_position + glm::vec2(m_fontSize * 0.05f, m_fontSize * 1.05f), Graphics::Colors::Black, m_fontSize);
 		renderer->DrawString(m_text, m_position + glm::vec2(0, m_fontSize), Graphics::Colors::White, m_fontSize);
 	}
 	bool UILabel::ContainsPoint(const glm::vec2& point) const
