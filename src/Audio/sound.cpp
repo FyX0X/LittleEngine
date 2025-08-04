@@ -53,6 +53,15 @@ namespace LittleEngine::Audio
 
 	}
 
+	void Sound::Stop()
+	{
+		ma_result result = ma_sound_stop(&m_sound);
+		if (result != MA_SUCCESS) {
+			LogError("Sound::Stop: could not stop the sound.  (Error Code: " + std::to_string(result) + ')');
+			return;
+		}
+	}
+
 #pragma endregion
 
 	bool Sound::IsPlaying() const
