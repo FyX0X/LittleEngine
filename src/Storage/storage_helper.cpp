@@ -3,6 +3,7 @@
 #include "LittleEngine/error_logger.h"
 #include <filesystem>
 #include <sstream>
+#include <fstream>
 
 namespace LittleEngine::Storage
 {

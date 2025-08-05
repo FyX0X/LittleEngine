@@ -34,6 +34,12 @@
 #include <thread>
 
 
+#ifdef _WIN32
+#include <windows.h>
+#include <dbghelp.h>
+#pragma comment(lib, "dbghelp.lib")
+#endif
+
 
 //if you are not using visual studio make shure you link to "Opengl32.lib"
 #ifdef _MSC_VER
@@ -51,7 +57,6 @@ namespace LittleEngine
 {
 	static std::unique_ptr<Window> s_window = {};
 	static WindowState s_windowState = {};
-	//static ResizeCallback s_windowResizeCallback = nullptr;
 	static const float s_updateTimeStep = 1.f / 60.f; // update step in seconds (60 FPS)
 	static float accumulatedTime = 0.f; // accumulated time for update steps
 	static float s_fps = 0.f; // frames per second
@@ -59,13 +64,7 @@ namespace LittleEngine
 #pragma region function pre definition;
 	namespace
 	{
-		//void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
-		//void cursor_position_callback(GLFWwindow* window, double xpos, double ypos);
-		//void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
-		//void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
-		//void processInput(GLFWwindow* window);
-		//void framebuffer_size_callback(GLFWwindow* window, int width, int height);
-		void PrintStackTrace();
+
 		void APIENTRY glDebugOutput(GLenum source,
 			GLenum type,
 			unsigned int id,
@@ -90,10 +89,10 @@ namespace LittleEngine
 
 
 		// TODO: move this to a better place, like a platform specific file or debug utility.
+//#include <windows.h> these are on top of the file, remove them when moving.
+//#include <dbghelp.h>
+//#pragma comment(lib, "dbghelp.lib")
 #ifdef _WIN32
-#include <windows.h>
-#include <dbghelp.h>
-#pragma comment(lib, "dbghelp.lib")
 		// Initialize call stack recording
 		SymInitialize(GetCurrentProcess(), NULL, TRUE);
 #endif
@@ -122,7 +121,7 @@ namespace LittleEngine
 		windowConfig.iconPath = config.iconPath;
 		s_window = Platform::Platform::MakeWindow(windowConfig);
 
-
+		// TODO : where to put this?
 
 		// check if debug was initialized correctly.
 		int flags; glGetIntegerv(GL_CONTEXT_FLAGS, &flags);
@@ -168,7 +167,6 @@ namespace LittleEngine
 
 #pragma endregion
 
-#pragma region MainLoop
 
 	void Run(const std::function<void(float)>& update, const std::function<void()>& render)
 	{
@@ -259,8 +257,6 @@ namespace LittleEngine
 
 
 	}
-
-#pragma endregion
 
 #pragma region Getters
 

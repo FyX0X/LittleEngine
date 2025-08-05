@@ -106,8 +106,6 @@ namespace LittleEngine::Platform
 
 		glfwPollEvents(); // Poll for and process events
 		glfwSwapBuffers(m_window); // Swap front and back buffers
-
-		std::cout << "size callback set:" << (m_state.windowResizeCallback != nullptr) << std::endl;
 	}
 
 
