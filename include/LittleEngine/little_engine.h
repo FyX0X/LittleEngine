@@ -35,7 +35,7 @@
 #include "LittleEngine/Graphics/render_target.h"
 #include "LittleEngine/UI/ui_system.h"
 
-#include "LittleEngine/geometry.h"
+#include "LittleEngine/Math/geometry.h"
 
 #include "LittleEngine/internal.h"
 

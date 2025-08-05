@@ -1,7 +1,7 @@
 #pragma once
 
 
-#include <LittleEngine/geometry.h>
+#include <LittleEngine/Math/geometry.h>
 #include <LittleEngine/Graphics/shader.h>
 #include <LittleEngine/Graphics/render_target.h>
 #include <LittleEngine/Graphics/camera.h>
@@ -29,7 +29,7 @@ namespace LittleEngine::Graphics
 		float radius = 1.f;
 
 
-		std::vector<ShadowQuad> GetShadowQuads(const Polygon& poly) const;
+		std::vector<ShadowQuad> GetShadowQuads(const Math::Polygon& poly) const;
 	};
 
 
@@ -79,19 +79,19 @@ namespace LittleEngine::Graphics
 
 #pragma region Obstacle management
 
-		Polygon* CreateObstacle(std::vector<glm::vec2> vertices);
+		Math::Polygon* CreateObstacle(std::vector<glm::vec2> vertices);
 
 		// Deletes an obstacle from the scene.
 		// Returns true if the obstacle was found and deleted, false otherwise.
-		// IMPORTANT: the Polygon pointer becomes invalid after deletion, do not use it anymore!
-		bool DeleteObstacle(Polygon* polygon);
+		// IMPORTANT: the Math::Polygon pointer becomes invalid after deletion, do not use it anymore!
+		bool DeleteObstacle(Math::Polygon* polygon);
 
 		/**
 		 * Deletes all obstacles in the scene.
 		 * IMPORTANT: after this call, all obstacles pointers become invalid, do not use them anymore!
 		 */
 		void ClearObstacles() { m_obstacles.clear(); }
-		const std::vector<std::unique_ptr<Polygon>>& GetObstacles() const { return m_obstacles; }
+		const std::vector<std::unique_ptr<Math::Polygon>>& GetObstacles() const { return m_obstacles; }
 
 		void PrecomputeShadowVertices();
 
@@ -113,7 +113,7 @@ namespace LittleEngine::Graphics
 
 		// unique_ptrs to own the light sources and obstacles
 		std::vector<std::unique_ptr<LightSource>> m_lightSources; // List of light sources in the scene
-		std::vector<std::unique_ptr<Polygon>> m_obstacles; // List of obstacles in the scene
+		std::vector<std::unique_ptr<Math::Polygon>> m_obstacles; // List of obstacles in the scene
 
 		// light and shadows rendering
 

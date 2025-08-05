@@ -241,7 +241,7 @@ namespace LittleEngine::Graphics
 		m_quadCount++;
 	}
 
-	void Renderer::DrawLine(const Edge& e, float width, Color color)
+	void Renderer::DrawLine(const Math::Edge& e, float width, Color color)
 	{
 		if (s_defaultTexture.id == 0)	// problem
 			ThrowError("RENDERER::DrawLine : default texture not loaded.");
@@ -289,7 +289,7 @@ namespace LittleEngine::Graphics
 
 	}
 	
-	void Renderer::DrawPolygon(const Polygon& polygon, const Color& color)
+	void Renderer::DrawPolygon(const Math::Polygon& polygon, const Color& color)
 	{
 		if (s_defaultTexture.id == 0)	// problem
 			ThrowError("RENDERER::DrawLine : default texture not loaded.");
@@ -336,7 +336,7 @@ namespace LittleEngine::Graphics
 		// if triangle count is even => good
 		// if triangle count is odd => make a false quad by duplicating the last vertex
 
-		Polygon poly = polygon; // copy polygon to modify it
+		Math::Polygon poly = polygon; // copy polygon to modify it
 
 		if (triangleCount % 2 != 0)
 		{
@@ -373,7 +373,7 @@ namespace LittleEngine::Graphics
 
 	}
 
-	void Renderer::DrawPolygonOutline(const Polygon& polygon, float width, const Color& color)
+	void Renderer::DrawPolygonOutline(const Math::Polygon& polygon, float width, const Color& color)
 	{
 		if (s_defaultTexture.id == 0)	// problem
 			ThrowError("RENDERER::DrawPolygonOutline : default texture not loaded.");
@@ -385,7 +385,7 @@ namespace LittleEngine::Graphics
 			return;
 		}
 
-		for (Edge& e : polygon.GetEdges())
+		for (Math::Edge& e : polygon.GetEdges())
 		{
 			DrawLine(e, width, color);
 		}

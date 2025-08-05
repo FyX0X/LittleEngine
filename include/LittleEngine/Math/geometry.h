@@ -4,7 +4,7 @@
 #include <glm/glm.hpp>
 
 
-namespace LittleEngine
+namespace LittleEngine::Math
 {
 
 	// Edge struct, representing a line segment between two points

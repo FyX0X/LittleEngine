@@ -90,12 +90,12 @@ namespace LittleEngine::Graphics
 	)";
 
 
-	std::vector<ShadowQuad> LightSource::GetShadowQuads(const Polygon& poly) const
+	std::vector<ShadowQuad> LightSource::GetShadowQuads(const Math::Polygon& poly) const
 	{
 		std::vector<ShadowQuad> shadowQuads;
-		for (const Edge& edge : poly.GetEdges())
+		for (const Math::Edge& edge : poly.GetEdges())
 		{
-			if (ThreePointOrientation(edge.p1, edge.p2, position) == 1)	// if clockwise, position in on the right side of the edge (faces light)
+			if (Math::ThreePointOrientation(edge.p1, edge.p2, position) == 1)	// if clockwise, position in on the right side of the edge (faces light)
 			{
 				glm::vec2 dir1 = glm::normalize(edge.p1 - position);
 				glm::vec2 dir2 = glm::normalize(edge.p2 - position);
@@ -465,23 +465,23 @@ namespace LittleEngine::Graphics
 		//LogError("LightSystem::DeleteLightSource : Light source not found.");
 	}
 
-	Polygon* LightSystem::CreateObstacle(std::vector<glm::vec2> vertices)
+	Math::Polygon* LightSystem::CreateObstacle(std::vector<glm::vec2> vertices)
 	{
-		Polygon poly = { vertices };
+		Math::Polygon poly = { vertices };
 		if (!poly.IsValid())
 		{
 			LogError("LightSystem::CreateObstacle : Polygon is not valid.");
 			return nullptr;
 		}
 
-		m_obstacles.push_back(std::make_unique<Polygon>(poly));
+		m_obstacles.push_back(std::make_unique<Math::Polygon>(poly));
 		return m_obstacles.back().get();
 	}
 
-	bool LightSystem::DeleteObstacle(Polygon* polygon)
+	bool LightSystem::DeleteObstacle(Math::Polygon* polygon)
 	{
 		auto it = std::remove_if(m_obstacles.begin(), m_obstacles.end(),
-			[polygon](const std::unique_ptr<Polygon>& p) { return p.get() == polygon; });
+			[polygon](const std::unique_ptr<Math::Polygon>& p) { return p.get() == polygon; });
 		if (it != m_obstacles.end())	// found
 		{
 			m_obstacles.erase(it, m_obstacles.end());

@@ -5,7 +5,7 @@
 #include "LittleEngine/Graphics/texture.h"
 #include "LittleEngine/Graphics/font.h"
 #include "LittleEngine/Graphics/render_target.h"
-#include "LittleEngine/geometry.h"
+#include "LittleEngine/Math/geometry.h"
 #include <vector>
 #include <array>
 #include <unordered_map>
@@ -102,15 +102,15 @@ namespace LittleEngine::Graphics
 		{
 			DrawLine({ p1, p2 }, width, color);
 		}
-		void DrawLine(const Edge& e, float width = 1.f, Color color = Colors::White);
+		void DrawLine(const Math::Edge& e, float width = 1.f, Color color = Colors::White);
 
 #pragma endregion
 
 #pragma region DRAW POLYGON
 		// Only works with convex polygons
-		void DrawPolygon(const Polygon& polygon, const Color& color = Colors::White);
+		void DrawPolygon(const Math::Polygon& polygon, const Color& color = Colors::White);
 
-		void DrawPolygonOutline(const Polygon& polygon, float width = 1.f, const Color& color = Colors::White);
+		void DrawPolygonOutline(const Math::Polygon& polygon, float width = 1.f, const Color& color = Colors::White);
 
 #pragma endregion
 
@@ -122,8 +122,8 @@ namespace LittleEngine::Graphics
 		}
 		void DrawString(const std::string& text, const glm::vec2 pos, const Font& font, Color color = Colors::White, float scale = 1.f);
 
-
 #pragma endregion
+
 
 		// Clears the current render target with the given color
 		void Clear(const Color& color = Colors::ClearColor);

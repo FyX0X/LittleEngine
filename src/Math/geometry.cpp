@@ -1,7 +1,7 @@
-#include "LittleEngine/geometry.h"
+#include "LittleEngine/Math/geometry.h"
 #include "LittleEngine/error_logger.h"
 
-namespace LittleEngine
+namespace LittleEngine::Math
 {
 
 #pragma region Edge
@@ -76,28 +76,6 @@ namespace LittleEngine
 
 	bool Polygon::IsValid() const
 	{
-		//// temp: output for debugging
-		//if (vertices.size() < 3)
-		//{
-		//	LogWarning("Polygon is invalid: less than 3 vertices.");
-		//	return false;
-		//}
-
-		//if (!IsCounterClockwise())
-		//{
-		//	LogWarning("Polygon is in clockwise order.");
-		//	return false;
-		//}
-
-		//if (IsSelfIntersecting())
-		//{
-		//	LogWarning("Polygon is self-intersecting.");
-		//	return false;
-		//}
-
-		//return true;
-
-
 		return (IsCounterClockwise() && !IsSelfIntersecting() && vertices.size() >= 3);
 	}
 
