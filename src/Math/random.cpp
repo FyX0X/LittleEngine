@@ -1,4 +1,4 @@
-#include "LittleEngine/Utils/random.h"
+#include "LittleEngine/Math/random.h"
 
 
 namespace
@@ -7,7 +7,7 @@ namespace
 }
 
 
-namespace LittleEngine::Random
+namespace LittleEngine::Math
 {
 
 	// choose random float in range [0, 1]
@@ -17,13 +17,13 @@ namespace LittleEngine::Random
 	}
 
 	// choose random float in range [min, max]
-	float Float(float min, float max)
+	float RandomFloat(float min, float max)
 	{
 		if (min >= max) ThrowError("Random::Float: min must be less than max.");
 		return min + (max - min) * u_0_1(Generator());
 	} 
 
-	int Int(int min, int max)
+	int RandomInt(int min, int max)
 	{
 		if (min >= max) ThrowError("Random::Int: min must be less than max.");
 		std::uniform_int_distribution<int> dist(min, max - 1);

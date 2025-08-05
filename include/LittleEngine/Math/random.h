@@ -7,7 +7,7 @@
 
 
 
-namespace LittleEngine::Random
+namespace LittleEngine::Math
 {
 	inline std::mt19937& Generator()
 	{
@@ -42,9 +42,9 @@ namespace LittleEngine::Random
 
 
 	// choose random float in range [min, max)
-	float Float(float min, float max);
+	float RandomFloat(float min, float max);
 
 	// choose random int in range [min, max)
-	int Int(int min, int max);
+	int RandomInt(int min, int max);
 
 }
