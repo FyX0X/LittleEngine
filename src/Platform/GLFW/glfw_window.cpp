@@ -171,6 +171,7 @@ namespace LittleEngine::Platform
 	{
 		return glfwWindowShouldClose(m_window); 
 	}
+
 	void GlfwWindow::SetWindowResizeCallback(Callbacks::Window::Resize callback)
 	{
 		assert(m_window && "GlfwWindow::SetWindowResizeCallback: Window not initialized.");

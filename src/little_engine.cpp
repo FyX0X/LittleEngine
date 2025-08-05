@@ -56,7 +56,6 @@ using TimePoint = std::chrono::time_point<Clock>;
 namespace LittleEngine
 {
 	static std::unique_ptr<Window> s_window = {};
-	static WindowState s_windowState = {};
 	static const float s_updateTimeStep = 1.f / 60.f; // update step in seconds (60 FPS)
 	static float accumulatedTime = 0.f; // accumulated time for update steps
 	static float s_fps = 0.f; // frames per second
@@ -260,6 +259,12 @@ namespace LittleEngine
 
 #pragma region Getters
 
+	Window* LittleEngine::GetWindow()
+	{
+		return s_window.get();
+	}
+
+
 	glm::ivec2 GetWindowSize()
 	{
 		int w, h;
@@ -274,19 +279,6 @@ namespace LittleEngine
 
 #pragma endregion
 
-#pragma region Setters
-
-	void SetWindowResizeCallback(ResizeCallback callback)
-	{
-		s_window->SetWindowResizeCallback(callback);
-	}
-
-
-
-#pragma endregion
-
-#pragma region Render options
-
 
 	void SetVsync(bool b)
 	{
@@ -294,8 +286,6 @@ namespace LittleEngine
 	}
 
 
-
-#pragma endregion
 
 #pragma region Internal
 

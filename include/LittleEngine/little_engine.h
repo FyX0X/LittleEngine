@@ -156,20 +156,15 @@ namespace LittleEngine
 	void Run(const std::function<void(float)>& update, const std::function<void()>& render);
 
 
+
 	// Gets the viewport size.
 	glm::ivec2 GetWindowSize();
 
 	float GetFPS();
 
-
-	using ResizeCallback = std::function<void(int width, int height)>;
-	void SetWindowResizeCallback(ResizeCallback callback);
-
-
+	Window* GetWindow();
 
 	void SetVsync(bool b);
-
-
 
 
 
