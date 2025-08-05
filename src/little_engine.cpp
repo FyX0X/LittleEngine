@@ -4,7 +4,7 @@
 //////////////////////////
 
 #include <glad/glad.h>
-#include <GLFW/glfw3.h>
+//#include <GLFW/glfw3.h>
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -30,14 +30,18 @@
 
 
 
-#include "LittleEngine/little_engine.h"
 #include "LittleEngine/error_logger.h"
+#include "LittleEngine/little_engine.h"
+
+
+#include "LittleEngine/Platform/platform.h"
 
 #include <fstream>
 #include <sstream>
 #include <algorithm>
 #include <iostream>
 #include <chrono>
+
 
 
 // remove
@@ -59,8 +63,9 @@ using TimePoint = std::chrono::time_point<Clock>;
 
 namespace LittleEngine
 {
-	static GLFWwindow* s_window = {};
-	static ResizeCallback s_windowResizeCallback = nullptr;
+	static std::unique_ptr<Window> s_window = {};
+	static WindowState s_windowState = {};
+	//static ResizeCallback s_windowResizeCallback = nullptr;
 	static const float s_updateTimeStep = 1.f / 60.f; // update step in seconds (60 FPS)
 	static float accumulatedTime = 0.f; // accumulated time for update steps
 	static float s_fps = 0.f; // frames per second
@@ -73,7 +78,7 @@ namespace LittleEngine
 		//void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
 		//void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 		//void processInput(GLFWwindow* window);
-		void framebuffer_size_callback(GLFWwindow* window, int width, int height);
+		//void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 		void PrintStackTrace();
 		void APIENTRY glDebugOutput(GLenum source,
 			GLenum type,
@@ -106,44 +111,74 @@ namespace LittleEngine
 #pragma region GLFW INIT
 
 
+		Platform::Platform::Initialize();
 		// glfw: initialize and configure
 		// ------------------------------
-		glfwInit();
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+		//glfwInit();
+		//glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+		//glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+		//glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-		// enable more debugging
-		glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, true);
+		//// enable more debugging
+		//glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, true);
+
 
 
 #ifdef __APPLE__
 		glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
 
-		// glfw window creation
-		// --------------------
-		s_window = glfwCreateWindow(config.windowWidth, config.windowHeight, config.title.c_str(), NULL, NULL);
-		if (s_window == NULL)
-		{
-			std::cout << "Failed to create GLFW window" << std::endl;
-			glfwTerminate();
-			return -1;
-		}
 
-		glfwMakeContextCurrent(s_window);
-		glfwSetFramebufferSizeCallback(s_window, framebuffer_size_callback);
+		//if (config.maximized)
+		//	glfwWindowHint(GLFW_MAXIMIZED, GLFW_TRUE);
+
+		//// glfw window creation		(defaults to resizable windowed mode)
+		//// --------------------
+		//s_window = glfwCreateWindow(config.windowWidth, config.windowHeight, config.title.c_str(), NULL, NULL);
+		//if (s_window == NULL)
+		//{
+		//	std::cout << "Failed to create GLFW window" << std::endl;
+		//	glfwTerminate();
+		//	return -1;
+		//}
+		//s_windowState.mode = config.windowMode;
+		//s_windowState.width = config.windowWidth;
+		//s_windowState.height = config.windowHeight;
+		//glfwGetWindowPos(s_window, &s_windowState.posX, &s_windowState.posY);
+
+		//// set the window mode
+		//if (config.windowMode != WindowMode::ResizableWindowed)
+		//{
+		//	SetWindowMode(config.windowMode);
+		//}
+
+
+		//glfwMakeContextCurrent(s_window);
+		//glfwSetFramebufferSizeCallback(s_window, framebuffer_size_callback);
 
 
 
+		//// glad: load all OpenGL function pointers
+		//// ---------------------------------------
+		//if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+		//{
+		//	std::cout << "Failed to initialize GLAD" << std::endl;
+		//	return -1;
+		//}
 
-		// glad: load all OpenGL function pointers
-		// ---------------------------------------
-		if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
-		{
-			std::cout << "Failed to initialize GLAD" << std::endl;
-			return -1;
-		}
+		WindowConfig windowConfig;
+		windowConfig.title = config.title;
+		windowConfig.width = config.windowWidth;
+		windowConfig.height = config.windowHeight;
+		windowConfig.mode = config.windowMode;
+		windowConfig.maximized = config.maximized;
+		windowConfig.vsyncEnabled = config.vsync;
+		windowConfig.iconPath = config.iconPath;
+		s_window = Platform::Platform::MakeWindow(windowConfig);
+
+		//// set callbacks
+		//s_window->SetWindowResizeCallback(s_windowResizeCallback);
+
 
 		// check if debug was initialized correctly.
 		int flags; glGetIntegerv(GL_CONTEXT_FLAGS, &flags);
@@ -173,28 +208,24 @@ namespace LittleEngine
 		ImGui::StyleColorsDark();
 
 		// Setup Platform/Renderer backends
-		ImGui_ImplGlfw_InitForOpenGL(s_window, true);
+		ImGui_ImplGlfw_InitForOpenGL(static_cast<GLFWwindow*>(s_window->GetNativeWindowHandle()), true);
 		ImGui_ImplOpenGL3_Init("#version 330 core");
 
 
 #endif
 #pragma endregion
 
-		glDisable(GL_DEPTH_TEST);	// disable depth test by default
+		//glDisable(GL_DEPTH_TEST);	// disable depth test by default
 
-		// default vsync:
-		SetVsync(config.vsync);
+		//// default vsync:
+		//SetVsync(config.vsync);
 
-		// load icon
-		if (!config.iconPath.empty())
-		{
-			SetApplicationIcon(config.iconPath);
-		}
+
 
 		// create default shader
 		Graphics::Shader::Initialize();
 		Graphics::Font::Initialize();
-		Input::Initialize(s_window, LittleEngine::GetWindowSize());
+		Input::Initialize(static_cast<GLFWwindow*>(s_window->GetNativeWindowHandle()), LittleEngine::GetWindowSize());
 
 		return 0;
 
@@ -212,7 +243,7 @@ namespace LittleEngine
 
 		// glfw: terminate, clearing all previously allocated GLFW resources.
 		// ------------------------------------------------------------------
-		glfwTerminate();
+		Platform::Platform::Shutdown();
 	}
 
 
@@ -232,7 +263,7 @@ namespace LittleEngine
 
 		// render loop
 		// -----------
-		while (!glfwWindowShouldClose(s_window))
+		while (!s_window->ShouldClose())
 		{
 			frameCount++;			// TODO REMOVE THIS WHEN NOT NEEDED
 
@@ -240,7 +271,7 @@ namespace LittleEngine
 			// -----
 
 			int w, h;
-			glfwGetWindowSize(s_window, &w, &h);
+			s_window->GetWindowSize(w, h);
 
 			// input
 			// -----
@@ -314,8 +345,7 @@ namespace LittleEngine
 
 			// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
 			// -------------------------------------------------------------------------------
-			glfwSwapBuffers(s_window);
-			glfwPollEvents();
+			s_window->OnUpdate();
 		}
 
 
@@ -332,7 +362,7 @@ namespace LittleEngine
 	glm::ivec2 GetWindowSize()
 	{
 		int w, h;
-		glfwGetWindowSize(s_window, &w, &h);
+		s_window->GetWindowSize(w, h);
 		return glm::ivec2(w, h);
 	}
 
@@ -347,8 +377,10 @@ namespace LittleEngine
 
 	void SetWindowResizeCallback(ResizeCallback callback)
 	{
-		s_windowResizeCallback = callback;
+		s_window->SetWindowResizeCallback(callback);
 	}
+
+
 
 #pragma endregion
 
@@ -357,7 +389,7 @@ namespace LittleEngine
 
 	void SetVsync(bool b)
 	{
-		glfwSwapInterval(b);
+		s_window->SetVsync(b);
 	}
 
 	void SetWireframe(bool b)
@@ -372,26 +404,7 @@ namespace LittleEngine
 		}
 	}
 
-	void SetApplicationIcon(const std::string& path)
-	{
-		int width, height, nrChannels;
-		unsigned char* pixels = stbi_load(path.c_str(), &width, &height, &nrChannels, 4);
 
-		if (pixels)
-		{
-			GLFWimage images[1];
-			images[0].width = width;
-			images[0].height = height;
-			images[0].pixels = pixels;
-
-			glfwSetWindowIcon(s_window, 1, images);
-			stbi_image_free(pixels);
-		}
-		else
-		{
-			LogError("SetApplicationIcon: failed to load icon: " + path);
-		}
-	}
 
 #pragma endregion
 
@@ -411,15 +424,7 @@ namespace LittleEngine
 
 		// glfw: whenever the window size changed (by OS or user resize) this callback function executes
 		// ---------------------------------------------------------------------------------------------
-		void framebuffer_size_callback(GLFWwindow* window, int width, int height)
-		{
-			// make sure the viewport matches the new window dimensions; note that width and 
-			// height will be significantly larger than specified on retina displays.
-			//glViewport(0, 0, width, height);
 
-			if (s_windowResizeCallback)
-				s_windowResizeCallback(width, height);
-		}
 
 		void PrintStackTrace()
 		{

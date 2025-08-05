@@ -62,6 +62,8 @@ namespace LittleEngine::Graphics
 		 */
 		void FollowSpring(const glm::vec2& target, float dt, float maxDistance = 5.f, float stiffness = 20.f, float damping = -1);
 
+
+		glm::vec2 ScreenToWorld(const glm::vec2& screenPos) const;
 	};
 
 

@@ -21,6 +21,9 @@ namespace LittleEngine::Audio
     }
     void AudioSystem::Shutdown()
     {
+        if (!m_initialized) return;
+
+		m_initialized = false;
         ma_engine_uninit(&m_engine);
     }
 

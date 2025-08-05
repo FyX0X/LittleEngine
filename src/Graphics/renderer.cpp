@@ -289,8 +289,6 @@ namespace LittleEngine::Graphics
 		m_quadCount++;
 
 	}
-
-
 	
 	void Renderer::DrawPolygon(const Polygon& polygon, const Color& color)
 	{
@@ -394,7 +392,6 @@ namespace LittleEngine::Graphics
 		}
 	}
 
-
 	void Renderer::DrawString(const std::string& text, const glm::vec2 pos, const Font& font, Color color, float scale)
 	{
 		if (font.GetTexture().id == 0)
@@ -445,6 +442,12 @@ namespace LittleEngine::Graphics
 	{
 		if (!m_isInitialized)
 			ThrowError("RENDERER::CLEAR : library was not initialized.");
+
+		if (m_width == 0 || m_height == 0)
+		{
+			LogWarning("Renderer::Clear: framebuffer size = 0 => skipping clear.");
+			return;
+		}
 
 		glClearColor(color.r, color.g, color.b, color.a);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -576,7 +579,7 @@ namespace LittleEngine::Graphics
 
 		if (m_vertices.empty() || m_indices.empty())
 		{
-			LogWarning("Renderer::Flush : Nothing to draw!");
+			//LogWarning("Renderer::Flush : Nothing to draw!");
 			return;
 		}
 
@@ -589,6 +592,14 @@ namespace LittleEngine::Graphics
 		if (m_camera == nullptr)
 		{
 			LogError("Renderer::Flush : Camera not set.");
+			return;
+		}
+
+
+		if (m_width == 0 || m_height == 0)
+		{
+			LogWarning("Renderer::Flush: size is zero : (" + std::to_string(m_width) + ", " +std::to_string(m_height) + "), skipping flush.");
+			ClearDrawQueue();
 			return;
 		}
 

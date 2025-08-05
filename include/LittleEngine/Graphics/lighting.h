@@ -54,7 +54,7 @@ namespace LittleEngine::Graphics
 #pragma region Light and shadow rendering
 
 		void RenderLighting(Renderer* renderer, RenderTarget* target, bool enableShadows = true, const Color& color = Colors::Black);
-
+		void RenderPrecomputedLighting(Renderer* renderer, RenderTarget* target, bool enableShadows = true, const Color& color = Colors::Black);
 
 #pragma endregion
 
@@ -93,11 +93,19 @@ namespace LittleEngine::Graphics
 		void ClearObstacles() { m_obstacles.clear(); }
 		const std::vector<std::unique_ptr<Polygon>>& GetObstacles() const { return m_obstacles; }
 
+		void PrecomputeShadowVertices();
+
+
 #pragma endregion
 
 	private:
 
-		void BatchShadows();
+		void BatchShadows()
+		{
+			BatchVertices(m_shadowVertices);
+			m_shadowVertices.clear(); // clear the vertices after batching
+		}
+		void BatchVertices(const std::vector<glm::vec2>& vertices);
 
 		bool m_initialized = false; // true if the light system is initialized
 
@@ -119,6 +127,9 @@ namespace LittleEngine::Graphics
 
 		std::vector<glm::vec2> m_shadowVertices; // vertices for shadow rendering
 
+
+		// precompute all shadow vertices for each light source and obstacle
+		std::vector<std::vector<std::vector<glm::vec2>>> m_verticesLightBatches; // shadow vertices for each light source
 
 	};
 

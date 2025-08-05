@@ -26,10 +26,14 @@ namespace LittleEngine::Audio
 			return;
 		}
 		m_isSpatialized = spatialized;
+		m_isInitialized = true;
 	}
 
 	void Sound::Shutdown()
 	{
+		if (!m_isInitialized) return;
+
+		m_isInitialized = false;
 		ma_sound_uninit(&m_sound);
 	}
 
@@ -53,7 +57,21 @@ namespace LittleEngine::Audio
 
 	}
 
+	void Sound::Stop()
+	{
+		ma_result result = ma_sound_stop(&m_sound);
+		if (result != MA_SUCCESS) {
+			LogError("Sound::Stop: could not stop the sound.  (Error Code: " + std::to_string(result) + ')');
+			return;
+		}
+	}
+
 #pragma endregion
+
+	bool Sound::IsPlaying() const
+	{
+		return ma_sound_is_playing(&m_sound);
+	}
 
 #pragma region Sound Modifiers
 

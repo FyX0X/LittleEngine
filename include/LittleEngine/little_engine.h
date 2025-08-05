@@ -40,6 +40,12 @@
 #include "LittleEngine/internal.h"
 
 
+#include "LittleEngine/error_logger.h"
+#include "LittleEngine/Platform/platform.h"
+#include "LittleEngine/Core/window.h"
+
+
+
 
 /**		TODO LIST:
  *
@@ -48,6 +54,8 @@
  * 9 slice
  * 
  * GRAPHICS:
+ * 
+ * add sprite (texture + uv)
  * 
  * current shader breaks on linux, seems to not respect correct glsl syntax but works on windows due to 
  *		leniant implementation on intel drivers: texture arrays not used correctly.		
@@ -124,11 +132,15 @@
 namespace LittleEngine
 {
 
-	struct EngineConfig
+
+
+	struct EngineConfig		// could be different than the window config, but for now it is the same
 	{
 		std::string title = "LittleEngine Game";
 		int windowWidth = 800;
 		int windowHeight = 600;
+		WindowMode windowMode = WindowMode::ResizableWindowed; // default is resizable windowed
+		bool maximized = false; // if true, the window will be maximized on startup (only works for resizable windowed mode)
 		bool vsync = true;
 		std::string iconPath = ""; // path to the application icon, can be empty
 	};
@@ -154,10 +166,9 @@ namespace LittleEngine
 	void SetWindowResizeCallback(ResizeCallback callback);
 
 
+
 	void SetVsync(bool b);
 	void SetWireframe(bool b);
-
-	void SetApplicationIcon(const std::string& path);
 
 
 

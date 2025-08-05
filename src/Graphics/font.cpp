@@ -26,6 +26,7 @@ namespace LittleEngine::Graphics
 				LogError("Font::Initialize: Could not init FreeType Library");
 			}
 
+
 		}
 
 

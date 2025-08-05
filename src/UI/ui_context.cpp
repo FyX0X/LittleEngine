@@ -36,6 +36,7 @@ namespace LittleEngine::UI
 	{
 		for (const auto& element : m_elements)
 		{
+			if (!element->IsEnabled()) continue; // skip if context is not enabled and element is not enabled
 			element->Draw(renderer);
 		}
 	}

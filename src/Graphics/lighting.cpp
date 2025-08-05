@@ -289,16 +289,157 @@ namespace LittleEngine::Graphics
 
 	}
 
-	void LightSystem::BatchShadows()
+	void LightSystem::RenderPrecomputedLighting(Renderer* renderer, RenderTarget* target, bool enableShadows, const Color& color)
+	{
+		if (!m_initialized)
+		{
+			LogError("LightSystem::RenderLighting : LightSystem not initialized.");
+			return;
+		}
+		if (m_verticesLightBatches.size() != m_lightSources.size())
+		{
+			LogError("LightSystem::RenderLighting : Precomputed shadow vertices not initialized.");
+			return;
+		}
+
+		if (!renderer)
+		{
+			LogError("LightSystem::RenderLighting : Renderer is null.");
+			return;
+		}
+
+		if (!target)
+		{
+			LogError("LightSystem::RenderLighting : RenderTarget is null.");
+			return;
+		}
+
+		// store previous renderTarget to restore it afterward.
+		RenderTarget* old = renderer->GetRenderTarget();
+
+		// recreate the temp FBO for correct size.
+		if (m_tempLightFBO.GetSize() != target->GetSize())
+		{
+			m_tempLightFBO.Cleanup(); // cleanup previous FBO if it exists
+			glm::ivec2 size = target->GetSize();
+			m_tempLightFBO.Create(size.x, size.y, GL_RGB16F);
+		}
+
+
+		renderer->SetRenderTarget(target);
+
+		// clear target and set background lighting color
+		renderer->Clear(color);
+
+		const Camera& camera = renderer->GetCamera();
+
+		for (size_t i = 0; i < m_lightSources.size(); i++)
+		{
+			const auto& lightSource = m_lightSources[i];
+
+			if (!lightSource) continue; // skip null light sources
+
+			renderer->SetBlendMode(Renderer::BlendMode::None);
+
+			renderer->SetRenderTarget(&m_tempLightFBO);
+			renderer->Clear(Colors::Black); // clear the temporary light FBO
+
+			// Set up light shader
+			m_lightShader.Use();
+			m_lightShader.SetMat4("uInvProj", glm::inverse(camera.GetProjectionMatrix()));
+			m_lightShader.SetMat4("uInvView", glm::inverse(camera.GetViewMatrix()));
+			m_lightShader.SetVec2("uScreenSize", target->GetSize());
+			m_lightShader.SetVec2("uLightPos", lightSource->position);
+			m_lightShader.SetVec3("uLightColor", lightSource->color);
+			m_lightShader.SetFloat("uLightRadius", lightSource->radius);
+			m_lightShader.SetFloat("uLightIntensity", lightSource->intensity);
+			// Draw the light volume
+			renderer->FlushFullscreenQuad();
+
+
+			if (enableShadows)
+			{
+				// Draw shadows
+				m_shadowShader.Use();
+				m_shadowShader.SetMat4("proj", camera.GetProjectionMatrix());
+				m_shadowShader.SetMat4("view", camera.GetViewMatrix());
+
+				// render all batches for this light source
+				for (size_t j = 0; j < m_verticesLightBatches[i].size(); j++)
+				{
+					const auto& batch = m_verticesLightBatches[i][j];
+
+
+					BatchVertices(batch); // flush previous batch if it exceeds max capacity
+
+
+				}
+
+			}
+
+			// Add the temporary light FBO to the main target
+			renderer->SetBlendMode(Renderer::BlendMode::Additive);
+			renderer->SetRenderTarget(target);
+
+			renderer->BlitImage(m_tempLightFBO.GetTexture());
+
+		}
+
+		renderer->SetBlendMode(Renderer::BlendMode::Alpha); // reset blend mode to default
+		renderer->SetRenderTarget(old); // reset to previous target
+		renderer->shader.Use();
+
+	}
+
+	void LightSystem::PrecomputeShadowVertices()
+	{
+		if (!m_initialized)
+		{
+			LogError("LightSystem::PrecomputeShadowVertices : LightSystem not initialized.");
+			return;
+		}
+		m_verticesLightBatches.clear(); // clear previous batches
+		for (const auto& lightSource : m_lightSources)
+		{
+			std::vector<std::vector<glm::vec2>> batches;
+			std::vector<glm::vec2> batch;
+			if (!lightSource) continue; // skip null light sources
+			for (const auto& obstacle : m_obstacles)
+			{
+				if (!obstacle) continue; // skip null obstacles
+				std::vector<ShadowQuad> shadowQuads = lightSource->GetShadowQuads(*obstacle);
+				std::vector<glm::vec2> vertices = GetShadowTriangles(shadowQuads);
+				// add new vertices
+				if (batch.size() + vertices.size() > m_maxQuadCount * 6)
+				{
+					// add current batch to the list and start a new one
+					batches.push_back(batch);
+					batch.clear();
+				}
+				batch.insert(batch.end(), vertices.begin(), vertices.end());
+			}
+			// add the last batch if not empty
+			if (!batch.empty())
+			{
+				batches.push_back(batch);
+				batch.clear();
+			}
+
+			// add the batches for this light source
+			m_verticesLightBatches.push_back(batches);
+		}
+		
+	}
+
+	void LightSystem::BatchVertices(const std::vector<glm::vec2>& vertices)
 	{
 		glBindVertexArray(shadowVAO);
 		glBindBuffer(GL_ARRAY_BUFFER, shadowVBO);
-		glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(glm::vec2) * m_shadowVertices.size(), m_shadowVertices.data());
-		glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(m_shadowVertices.size()));
+		glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(glm::vec2) * vertices.size(), vertices.data());
+		glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(vertices.size()));
 		glBindVertexArray(0);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-		m_shadowVertices.clear(); // clear after drawing
 	}
 
 

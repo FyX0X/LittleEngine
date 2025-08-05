@@ -25,6 +25,8 @@ namespace LittleEngine::Audio
 		void Shutdown();
 
 		void Play();
+		void Stop();
+		bool IsPlaying() const;
 
 		void SetVolume(float volume);
 		void SetPitch(float pitch);
@@ -46,6 +48,7 @@ namespace LittleEngine::Audio
 
 		ma_sound m_sound = {};
 		bool m_isSpatialized = false;
+		bool m_isInitialized = false; // whether the sound is initialized
 
 
 	};

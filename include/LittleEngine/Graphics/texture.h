@@ -34,6 +34,12 @@ namespace LittleEngine::Graphics
 #pragma endregion
 
 
+	struct Sprite
+	{
+		Texture texture = {};
+		glm::vec4 uvs = { 0, 0, 1, 1 };
+	};
+
 
 #pragma region TextureAtlas
 	struct AtlasCoord

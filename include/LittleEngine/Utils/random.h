@@ -1,0 +1,50 @@
+#pragma once
+
+#include <random>
+#include <vector>
+
+#include "LittleEngine/error_logger.h"
+
+
+
+namespace LittleEngine::Random
+{
+	inline std::mt19937& Generator()
+	{
+		static std::mt19937 generator(std::random_device{}());
+		return generator;
+	}
+
+#pragma region Vector Choose
+	// choose element from vector
+	template<typename T>
+	inline const T& Choose(const std::vector<T>& vec)
+	{
+		if (vec.empty()) ThrowError("Random::Choose: Cannot choose from an empty vector.");
+		std::uniform_int_distribution<size_t> dist(0, vec.size() - 1);
+		return vec[dist(Generator())];
+	}
+
+	template<typename T>
+	inline T& Choose(std::vector<T>& vec)
+	{
+		if (vec.empty()) ThrowError("Random::Choose: Cannot choose from an empty vector.");
+		std::uniform_int_distribution<size_t> dist(0, vec.size() - 1);
+		return vec[dist(Generator())];
+	}
+
+#pragma endregion
+
+#pragma region Range
+	
+	// choose random float in range [0, 1]
+	float Random();
+
+
+	// choose random float in range [min, max)
+	float Float(float min, float max);
+
+	// choose random int in range [min, max)
+	int Int(int min, int max);
+
+}
