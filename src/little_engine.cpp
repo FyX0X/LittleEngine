@@ -12,16 +12,7 @@
 
 
 
-#ifdef _WIN32
-#include <windows.h>
-#include <dbghelp.h>
-#pragma comment(lib, "dbghelp.lib")
-#else
-#include <execinfo.h>
-#include <unistd.h>
-#include <cxxabi.h>
-#include <cstdlib>
-#endif
+
 
 
 
@@ -97,7 +88,12 @@ namespace LittleEngine
 		}
 		internal::g_initialized = true;
 
+
+		// TODO: move this to a better place, like a platform specific file or debug utility.
 #ifdef _WIN32
+#include <windows.h>
+#include <dbghelp.h>
+#pragma comment(lib, "dbghelp.lib")
 		// Initialize call stack recording
 		SymInitialize(GetCurrentProcess(), NULL, TRUE);
 #endif
@@ -311,57 +307,7 @@ namespace LittleEngine
 	namespace 
 	{
 
-		void PrintStackTrace()
-		{
-			constexpr int MAX_FRAMES = 64;
 
-#if defined(_WIN32) || defined(_WIN64)
-			void* stack[MAX_FRAMES];
-			HANDLE process = GetCurrentProcess();
-
-			USHORT frames = CaptureStackBackTrace(0, MAX_FRAMES, stack, nullptr);
-
-			SYMBOL_INFO* symbol = (SYMBOL_INFO*)calloc(sizeof(SYMBOL_INFO) + 256, 1);
-			symbol->MaxNameLen = 255;
-			symbol->SizeOfStruct = sizeof(SYMBOL_INFO);
-
-			SymInitialize(process, NULL, TRUE);
-
-			std::cerr << "Call stack:\n";
-			for (USHORT i = 0; i < frames; ++i) {
-				if (SymFromAddr(process, (DWORD64)(stack[i]), 0, symbol)) {
-					std::cerr << i << ": " << symbol->Name << " - 0x" << std::hex << symbol->Address << std::dec << "\n";
-				}
-			}
-
-			free(symbol);
-
-#else
-			void* buffer[MAX_FRAMES];
-			int nptrs = backtrace(buffer, MAX_FRAMES);
-			char** symbols = backtrace_symbols(buffer, nptrs);
-
-			std::cerr << "Call stack:\n";
-			for (int i = 0; i < nptrs; ++i) {
-				// Try to demangle
-				char* mangledName = symbols[i];
-				char* demangled = nullptr;
-				int status = 0;
-
-				// attempt to demangle
-				demangled = abi::__cxa_demangle(mangledName, nullptr, nullptr, &status);
-				if (status == 0 && demangled) {
-					std::cerr << i << ": " << demangled << "\n";
-					free(demangled);
-				}
-				else {
-					std::cerr << i << ": " << symbols[i] << "\n";
-				}
-			}
-
-			free(symbols);
-#endif
-		}
 
 
 		// Custom callbackFunction to pass to openGL for debugging
