@@ -77,6 +77,9 @@ namespace LittleEngine::Platform
 		}
 
 
+		glDisable(GL_DEPTH_TEST);	// disable depth test by default
+
+
 		return true;
 	}
 

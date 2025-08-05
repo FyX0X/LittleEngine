@@ -1,5 +1,3 @@
-#include "renderer.h"
-
 #include "LittleEngine/Graphics/renderer.h"
 #include "LittleEngine/Graphics/bitmap_helper.h"
 

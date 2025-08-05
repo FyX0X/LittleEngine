@@ -10,12 +10,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#if ENABLE_IMGUI == 1
-#include <imgui.h>
-#include <backends/imgui_impl_glfw.h>
-#include <backends/imgui_impl_opengl3.h>
 
-#endif // 
 
 #ifdef _WIN32
 #include <windows.h>
@@ -147,32 +142,9 @@ namespace LittleEngine
 
 
 
-#pragma region ImGui setup
-
 #if ENABLE_IMGUI == 1
-		// ImGui
-
-// Setup Dear ImGui context
-		IMGUI_CHECKVERSION();
-		ImGui::CreateContext();
-		ImGuiIO& io = ImGui::GetIO(); (void)io;
-
-		// Setup style
-		ImGui::StyleColorsDark();
-
-		// Setup Platform/Renderer backends
-		ImGui_ImplGlfw_InitForOpenGL(static_cast<GLFWwindow*>(s_window->GetNativeWindowHandle()), true);
-		ImGui_ImplOpenGL3_Init("#version 330 core");
-
-
+		Platform::Platform::ImGuiInitialize(s_window.get());
 #endif
-#pragma endregion
-
-		//glDisable(GL_DEPTH_TEST);	// disable depth test by default
-
-		//// default vsync:
-		//SetVsync(config.vsync);
-
 
 
 		// create default shader
@@ -189,12 +161,10 @@ namespace LittleEngine
 	{
 
 #if ENABLE_IMGUI == 1
-		ImGui_ImplOpenGL3_Shutdown();
-		ImGui_ImplGlfw_Shutdown();
-		ImGui::DestroyContext();
+		Platform::Platform::ImGuiShutdown();
 #endif
 
-		// glfw: terminate, clearing all previously allocated GLFW resources.
+		// platform: terminate, clearing all previously allocated resources.
 		// ------------------------------------------------------------------
 		Platform::Platform::Shutdown();
 	}
@@ -231,15 +201,9 @@ namespace LittleEngine
 			Input::UpdateInputState();
 
 
-#pragma region ImGui NewFrame
 #if ENABLE_IMGUI == 1
-			// ImGui
-			// Start a new ImGui frame
-			ImGui_ImplOpenGL3_NewFrame();
-			ImGui_ImplGlfw_NewFrame();
-			ImGui::NewFrame();
+			Platform::Platform::ImGuiNewFrame();
 #endif
-#pragma endregion
 
 
 			// deltaTime
@@ -284,17 +248,9 @@ namespace LittleEngine
 			Input::UpdatePreviousInputState();
 
 
-#pragma region ImGui Render
-
 #if ENABLE_IMGUI == 1
-			// ImGui
-
-			// Rendering
-			ImGui::Render();
-			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-
+			Platform::Platform::ImGuiRender();
 #endif
-#pragma endregion
 
 			// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
 			// -------------------------------------------------------------------------------
@@ -354,18 +310,6 @@ namespace LittleEngine
 	// internal only functions
 	namespace 
 	{
-
-		//// process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
-		//// ---------------------------------------------------------------------------------------------------------
-		//void processInput(GLFWwindow* window)
-		//{
-		//	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-		//		glfwSetWindowShouldClose(window, true);
-		//}
-
-		// glfw: whenever the window size changed (by OS or user resize) this callback function executes
-		// ---------------------------------------------------------------------------------------------
-
 
 		void PrintStackTrace()
 		{
