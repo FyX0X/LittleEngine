@@ -1,3 +1,4 @@
+#include "renderer.h"
 
 #include "LittleEngine/Graphics/renderer.h"
 #include "LittleEngine/Graphics/bitmap_helper.h"
@@ -499,6 +500,17 @@ namespace LittleEngine::Graphics
 		Flush(); // render everything queued
 	}
 
+	void Renderer::SetWireframe(bool b)
+	{
+		if (b)
+		{
+			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		}
+		else
+		{
+			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+		}
+	}
 
 	void Renderer::SaveScreenshot(RenderTarget* target, const std::string& name)
 	{

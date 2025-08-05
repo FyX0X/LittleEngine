@@ -108,19 +108,11 @@ namespace LittleEngine
 #endif
 
 		// INITIALIZE GLFW
-#pragma region GLFW INIT
+#pragma region PLATFORM INIT
 
 
 		Platform::Platform::Initialize();
-		// glfw: initialize and configure
-		// ------------------------------
-		//glfwInit();
-		//glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-		//glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-		//glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-		//// enable more debugging
-		//glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, true);
 
 
 
@@ -128,43 +120,6 @@ namespace LittleEngine
 		glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
 
-
-		//if (config.maximized)
-		//	glfwWindowHint(GLFW_MAXIMIZED, GLFW_TRUE);
-
-		//// glfw window creation		(defaults to resizable windowed mode)
-		//// --------------------
-		//s_window = glfwCreateWindow(config.windowWidth, config.windowHeight, config.title.c_str(), NULL, NULL);
-		//if (s_window == NULL)
-		//{
-		//	std::cout << "Failed to create GLFW window" << std::endl;
-		//	glfwTerminate();
-		//	return -1;
-		//}
-		//s_windowState.mode = config.windowMode;
-		//s_windowState.width = config.windowWidth;
-		//s_windowState.height = config.windowHeight;
-		//glfwGetWindowPos(s_window, &s_windowState.posX, &s_windowState.posY);
-
-		//// set the window mode
-		//if (config.windowMode != WindowMode::ResizableWindowed)
-		//{
-		//	SetWindowMode(config.windowMode);
-		//}
-
-
-		//glfwMakeContextCurrent(s_window);
-		//glfwSetFramebufferSizeCallback(s_window, framebuffer_size_callback);
-
-
-
-		//// glad: load all OpenGL function pointers
-		//// ---------------------------------------
-		//if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
-		//{
-		//	std::cout << "Failed to initialize GLAD" << std::endl;
-		//	return -1;
-		//}
 
 		WindowConfig windowConfig;
 		windowConfig.title = config.title;
@@ -176,8 +131,6 @@ namespace LittleEngine
 		windowConfig.iconPath = config.iconPath;
 		s_window = Platform::Platform::MakeWindow(windowConfig);
 
-		//// set callbacks
-		//s_window->SetWindowResizeCallback(s_windowResizeCallback);
 
 
 		// check if debug was initialized correctly.
@@ -390,18 +343,6 @@ namespace LittleEngine
 	void SetVsync(bool b)
 	{
 		s_window->SetVsync(b);
-	}
-
-	void SetWireframe(bool b)
-	{
-		if (b)
-		{
-			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-		}
-		else
-		{
-			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-		}
 	}
 
 

@@ -56,6 +56,9 @@ namespace LittleEngine::Graphics
 		void BeginFrame();
 		void EndFrame();
 
+
+		void SetWireframe(bool b);
+
 		// flushes a fullscreen quad to the current render target
 		// uses the current shader set by the user (shader.Use())
 		void FlushFullscreenQuad();

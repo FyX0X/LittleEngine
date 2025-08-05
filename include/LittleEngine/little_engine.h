@@ -168,7 +168,6 @@ namespace LittleEngine
 
 
 	void SetVsync(bool b);
-	void SetWireframe(bool b);
 
 
 
