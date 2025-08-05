@@ -44,6 +44,7 @@
 /**		TODO LIST:
  *
  * UI :
+ * position with anchor + offset
  * 9 slice
  * 
  * GRAPHICS:
@@ -55,16 +56,15 @@
  *		or sparse bindless texture arrays ?
  * 
  * current solution: use flat int for texture index. => still does not work on linux.
- * new solution: not using array but 16 samplers variables.
+ * new solution: not using array but 16 samplers variables. ok
  * 
  * fix flush to allow better polygon instead of mutliple quads.
  * 
- * add blit fullscreen quad to render target.
+ * add blit fullscreen quad to render target. ok
  * 
- * add render target and fbo. ok but not good yet...
- * maybe still improve. => current projection maybe strange ... because not "pixel unit".
+ * add render target and fbo. ok
  * 
- * draw circle ?
+ * draw circle ?	=> kinda (draw polygon manually)
  * draw particle ?
  * optimise renderer flush and batching.	YES -> currently pushing all vertices and indices to flush then tp batch, doing two times the work
  * Optimisation needed.

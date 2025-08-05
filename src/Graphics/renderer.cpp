@@ -784,6 +784,8 @@ namespace LittleEngine::Graphics
 		FlushFullscreenQuad(); // Render the fullscreen quad with the bound texture
 
 		texture.Unbind(0); // Unbind the texture after rendering
+
+		shader.Use(); // Reset to default shader after blitting
 	}
 
 	void Renderer::MergeLightScene(const Texture& scene, const Texture& light)
