@@ -48,6 +48,7 @@ namespace LittleEngine::Audio
 
 		ma_sound m_sound = {};
 		bool m_isSpatialized = false;
+		bool m_isInitialized = false; // whether the sound is initialized
 
 
 	};

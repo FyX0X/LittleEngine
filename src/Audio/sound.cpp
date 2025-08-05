@@ -26,10 +26,14 @@ namespace LittleEngine::Audio
 			return;
 		}
 		m_isSpatialized = spatialized;
+		m_isInitialized = true;
 	}
 
 	void Sound::Shutdown()
 	{
+		if (!m_isInitialized) return;
+
+		m_isInitialized = false;
 		ma_sound_uninit(&m_sound);
 	}
 

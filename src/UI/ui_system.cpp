@@ -4,6 +4,11 @@
 #include "LittleEngine/error_logger.h"
 
 
+// Temporary includes for glad and GLFW
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
+
+
 namespace LittleEngine::UI
 {	
 

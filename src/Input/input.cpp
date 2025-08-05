@@ -5,6 +5,10 @@
 
 
 
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
+
+
 #if ENABLE_IMGUI == 1
 #include <imgui.h>
 #include <backends/imgui_impl_glfw.h>

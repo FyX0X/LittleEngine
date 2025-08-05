@@ -2,15 +2,19 @@
 
 #include <iostream>
 #include <functional>
-#include <GLFW/glfw3.h>
 #include <memory>
 #include <glm/glm.hpp>
 
+
+
+struct GLFWwindow; // Forward declaration of GLFWwindow
 
 namespace LittleEngine::Input
 {
 	using KeyCode = int;
 	using MouseButton = int;
+
+
 
 	// represents a float in [-1, 1]
 	using InputAxis = float;
@@ -33,6 +37,10 @@ namespace LittleEngine::Input
 		Down,       // Trigger continuously every frame while held
 		Up
 	};
+
+	// TODO: check if this could be used instead of InputEventType
+	//enum class InputCallbackType { Pressed, Released };
+	//enum class InputStateType { Down, Up };
 
 
 	void Initialize(GLFWwindow* window, const glm::ivec2& windowSize);
