@@ -1,24 +1,23 @@
-#include "LittleEngine/Storage/storage_helper.h"
+#include "LittleEngine/Utils/file_system.h"
 #include "LittleEngine/internal.h"
 #include "LittleEngine/error_logger.h"
 #include <filesystem>
 #include <sstream>
 #include <fstream>
 
-namespace LittleEngine::Storage
+namespace LittleEngine::Utils::FileSystem
 {
-	//bool FileExists(const std::filesystem::path& path)
-	//{
-	//	return std::filesystem::exists(path);
-	//}
 
-	void EnsureDirectoryExists(const std::filesystem::path& path)
+	bool FileExists(const std::filesystem::path& path)
 	{
-		// check is screenshot folder exists
-		if (!std::filesystem::exists("screenshots"))
-		{
-			std::filesystem::create_directory("screenshots");
-		}
+		return std::filesystem::exists(path) && std::filesystem::is_regular_file(path);
+	}
+
+
+	void CreateDirectories(const std::filesystem::path& path)
+	{
+		std::filesystem::create_directories(path);
+	
 	}
 
 	std::string GetNextFreeFilepath(const std::string& folder, const std::string& prefix, const std::string& ext)
@@ -26,7 +25,7 @@ namespace LittleEngine::Storage
 		int index = 0;
 		std::filesystem::path path;
 
-		EnsureDirectoryExists(folder);
+		CreateDirectories(folder);
 
 
 		while (index < defaults::maxFileCount)
@@ -59,13 +58,13 @@ namespace LittleEngine::Storage
 		return out.good();
 	}
 
-	bool WriteBinaryFile(const std::filesystem::path& path, const std::vector<char>& data)
+	bool WriteBinaryFile(const std::filesystem::path& path, const std::vector<unsigned char>& data)
 	{
 		std::ofstream out(path, std::ios::binary);
 		if (!out.is_open())
 			return false;
 
-		out.write(data.data(), static_cast<std::streamsize>(data.size()));
+		out.write(reinterpret_cast<const char*>(data.data()), static_cast<std::streamsize>(data.size()));
 		return out.good();
 	}
 
@@ -73,8 +72,7 @@ namespace LittleEngine::Storage
 	{
 		std::ifstream in(path);
 		if (!in.is_open())
-		{	
-			target = nullptr;
+		{
 			return false;
 		}
 			
@@ -84,19 +82,20 @@ namespace LittleEngine::Storage
 		return in.good();
 	}
 
-	bool ReadBinaryFile(const std::filesystem::path& path, std::vector<char>* target)
+	bool ReadBinaryFile(const std::filesystem::path& path, std::vector<unsigned char>* target)
 	{
 		std::ifstream in(path, std::ios::binary | std::ios::ate);		// open at end of file
 		if (!in.is_open())
-			target = nullptr;
+		{
 			return false;
+		}
 
 
 		std::streamsize size = in.tellg();		// get size of file
 		in.seekg(0, std::ios::beg);				// go back to beginning
 
-		target->reserve(size);
-		if (!in.read(target->data(), size))
+		target->resize(size);
+		if (!in.read(reinterpret_cast<char*>(target->data()), size))
 			return false;
 		return true;
 

@@ -4,11 +4,11 @@
 #include <filesystem>
 
 
-namespace LittleEngine::Storage
+namespace LittleEngine::Utils::FileSystem
 {
 
-	//bool FileExists(const std::string& path);
-	void EnsureDirectoryExists(const std::filesystem::path& path);
+	bool FileExists(const std::filesystem::path& path);
+	void CreateDirectories(const std::filesystem::path& path);
 
 	/**
 	 * Returns the next available filename
@@ -24,7 +24,7 @@ namespace LittleEngine::Storage
 
 
 	bool WriteTextFile(const std::filesystem::path& path, const std::string& text);
-	bool WriteBinaryFile(const std::filesystem::path& path, const std::vector<char>& data);
+	bool WriteBinaryFile(const std::filesystem::path& path, const std::vector<unsigned char>& data);
 	bool ReadTextFile(const std::filesystem::path& path, std::string* target);
-	bool ReadBinaryFile(const std::filesystem::path& path, std::vector<char>* target);
+	bool ReadBinaryFile(const std::filesystem::path& path, std::vector<unsigned char>* target);
 }

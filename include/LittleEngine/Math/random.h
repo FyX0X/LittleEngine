@@ -26,7 +26,7 @@ namespace LittleEngine::Math
 	}
 
 	template<typename T>
-	inline T& Choose(std::vector<T>& vec)
+	inline T& Choose(std::vector<T>& vec)	
 	{
 		if (vec.empty()) ThrowError("Random::Choose: Cannot choose from an empty vector.");
 		std::uniform_int_distribution<size_t> dist(0, vec.size() - 1);

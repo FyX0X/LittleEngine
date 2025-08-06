@@ -3,7 +3,7 @@
 
 #include "LittleEngine/error_logger.h"
 #include "LittleEngine/internal.h"
-#include "LittleEngine/Storage/storage_helper.h"
+#include "LittleEngine/Utils/file_system.h"
 
 #include <glad/glad.h>
 #include <glm/gtc/matrix_transform.hpp>
@@ -540,9 +540,9 @@ namespace LittleEngine::Graphics
 		// swap pixels because opengl has bottom left as origin, instead of top left.
 		FlipBitmapVertically(pixels.data(), width, height, 4);
 
-		Storage::EnsureDirectoryExists("screenshots");
+		Utils::FileSystem::CreateDirectories("screenshots");
 
-		std::string path = Storage::GetNextFreeFilepath("screenshots", name, ".png");
+		std::string path = Utils::FileSystem::GetNextFreeFilepath("screenshots", name, ".png");
 
 
 		stbi_write_png(path.c_str(), width, height, 4, pixels.data(), width * 4);
