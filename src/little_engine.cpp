@@ -100,7 +100,7 @@ namespace LittleEngine
 #pragma region PLATFORM INIT
 
 
-		Platform::Platform::Initialize();
+		Platform::Initialize();
 
 
 
@@ -118,7 +118,7 @@ namespace LittleEngine
 		windowConfig.maximized = config.maximized;
 		windowConfig.vsyncEnabled = config.vsync;
 		windowConfig.iconPath = config.iconPath;
-		s_window = Platform::Platform::MakeWindow(windowConfig);
+		s_window = Platform::MakeWindow(windowConfig);
 
 		// TODO : where to put this?
 
@@ -137,7 +137,7 @@ namespace LittleEngine
 
 
 #if ENABLE_IMGUI == 1
-		Platform::Platform::ImGuiInitialize(s_window.get());
+		Platform::ImGuiInitialize(s_window.get());
 #endif
 
 
@@ -155,12 +155,12 @@ namespace LittleEngine
 	{
 
 #if ENABLE_IMGUI == 1
-		Platform::Platform::ImGuiShutdown();
+		Platform::ImGuiShutdown();
 #endif
 
 		// platform: terminate, clearing all previously allocated resources.
 		// ------------------------------------------------------------------
-		Platform::Platform::Shutdown();
+		Platform::Shutdown();
 	}
 
 
@@ -195,7 +195,7 @@ namespace LittleEngine
 
 
 #if ENABLE_IMGUI == 1
-			Platform::Platform::ImGuiNewFrame();
+			Platform::ImGuiNewFrame();
 #endif
 
 
@@ -242,7 +242,7 @@ namespace LittleEngine
 
 
 #if ENABLE_IMGUI == 1
-			Platform::Platform::ImGuiRender();
+			Platform::ImGuiRender();
 #endif
 
 			// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)

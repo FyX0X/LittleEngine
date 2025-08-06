@@ -13,50 +13,19 @@ using PlatformImpl = LittleEngine::Platform::PlatformGlfw;
 
 namespace LittleEngine::Platform
 {
-	class Platform
-	{
-	public:
-		static bool Initialize()
-		{
-			return PlatformImpl::Initialize();
-		}
-		static void Shutdown()
-		{
-			PlatformImpl::Shutdown();
-		}
-		static bool IsInitialized()
-		{
-			return PlatformImpl::IsInitialized();
-		}
 
-		static std::unique_ptr<Window> MakeWindow(const WindowConfig& config)
-		{
-			return PlatformImpl::MakeWindow(config);
-		}
+		inline bool Initialize() { return PlatformImpl::Initialize(); }
+		inline void Shutdown() { PlatformImpl::Shutdown(); }
+		inline bool IsInitialized() { return PlatformImpl::IsInitialized(); }
+		inline std::unique_ptr<Window> MakeWindow(const WindowConfig& config) { return PlatformImpl::MakeWindow(config); }
 
 #if ENABLE_IMGUI == 1
-		static void ImGuiInitialize(Window* window)
-		{
-			PlatformImpl::ImGuiInitialize(window);
-		}
-
-		static void ImGuiShutdown()
-		{
-			PlatformImpl::ImGuiShutdown();
-		}
-
-		static void ImGuiNewFrame()
-		{
-			PlatformImpl::ImGuiNewFrame();
-		}
-
-		static void ImGuiRender()
-		{
-			PlatformImpl::ImGuiRender();
-		}
+		inline void ImGuiInitialize(Window* window) { PlatformImpl::ImGuiInitialize(window); }
+		inline void ImGuiShutdown() { PlatformImpl::ImGuiShutdown(); }
+		inline void ImGuiNewFrame() { PlatformImpl::ImGuiNewFrame(); }
+		inline void ImGuiRender() { PlatformImpl::ImGuiRender(); }
 #endif
 
 
-	};
 
 } 
