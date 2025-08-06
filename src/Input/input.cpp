@@ -1,7 +1,7 @@
 
 #include "LittleEngine/Input/input.h"
 
-#include "LittleEngine/error_logger.h"
+#include "LittleEngine/Utils/logger.h"
 
 
 
@@ -192,7 +192,7 @@ namespace LittleEngine::Input
 
 		if (cmd == nullptr)
 		{
-			LogError("Input::CallCommand: Command is nullptr.");
+			Utils::Logger::Warning("Input::CallCommand: Command is nullptr.");
 			return;
 		}
 
@@ -218,7 +218,7 @@ namespace LittleEngine::Input
 	{
 		if (key < 0 || key >= MaxKeyCode)	// just in case
 		{
-			ThrowError("Input::UpdateAxis: incorrect key: " + std::to_string(key));
+			Utils::Logger::Warning("Input::UpdateAxis: incorrect key: " + std::to_string(key));
 		}
 
 		std::vector<std::string>& posAxices = s_posKeyAxisBindings[key];
@@ -269,7 +269,7 @@ namespace LittleEngine::Input
 		{
 			return it->second;
 		}
-		LogError("Input::GetAxis: No axis with name: " + name);
+		Utils::Logger::Warning("Input::GetAxis: No axis with name: " + name);
 		return 0;
 
 	}
@@ -317,7 +317,7 @@ namespace LittleEngine::Input
 		}
 		else 
 		{
-			LogError("Input::RegisterAxis: Axis '" + name + "' already exists.");
+			Utils::Logger::Warning("Input::RegisterAxis: Axis '" + name + "' already exists.");
 		}
 	}
 
@@ -326,7 +326,7 @@ namespace LittleEngine::Input
 
 		if (s_axices.find(name) == s_axices.end())	// not found
 		{
-			LogError("Input::BindKeysToAxis: axis '" + name + "' does not exists.");
+			Utils::Logger::Warning("Input::BindKeysToAxis: axis '" + name + "' does not exists.");
 			return;
 		}
 
@@ -340,7 +340,7 @@ namespace LittleEngine::Input
 	{
 		if (key < 0 || key > MaxKeyCode)
 		{
-			LogError("Input::BindKeyToCommand: invalid key: " + std::to_string(key));
+			Utils::Logger::Warning("Input::BindKeyToCommand: invalid key: " + std::to_string(key));
 			return;
 		}
 
@@ -350,7 +350,7 @@ namespace LittleEngine::Input
 		{
 			if (typeid(*cmds[i]) == typeid(*cmd))		// *cmd and not cmd.get() to dereference and get Actual type (not Command)
 			{
-				LogError("Input::BindKeyToCommand: Command " + cmd->GetName() + " already binded to key: " + std::to_string(key));
+				Utils::Logger::Warning("Input::BindKeyToCommand: Command " + cmd->GetName() + " already binded to key: " + std::to_string(key));
 				return;
 			}
 		}
@@ -361,7 +361,7 @@ namespace LittleEngine::Input
 	{
 		if (mb < 0 || mb > MaxMouseButton)
 		{
-			LogError("Input::BindMouseButtonToCommand: invalid mouse button: " + std::to_string(mb));
+			Utils::Logger::Warning("Input::BindMouseButtonToCommand: invalid mouse button: " + std::to_string(mb));
 			return;
 		}
 		// check if action already binded to mouse button.
@@ -370,7 +370,7 @@ namespace LittleEngine::Input
 		{
 			if (typeid(*cmds[i]) == typeid(*cmd))
 			{
-				LogError("Input::BindMouseButtonToCommand: command: " + cmd->GetName() + " already binded to mouse button: " + std::to_string(mb));
+				Utils::Logger::Warning("Input::BindMouseButtonToCommand: command: " + cmd->GetName() + " already binded to mouse button: " + std::to_string(mb));
 				return;
 			}
 		}
@@ -389,7 +389,7 @@ namespace LittleEngine::Input
 
 #endif
 		// xoffset and yoffset indicate scroll amount (e.g. vertical scroll in yoffset)
-		LogWarning("Input::scroll_callback not implemented yet.");
+		Utils::Logger::Warning("Input::scroll_callback not implemented yet.");
 	}
 
 	void cursor_position_callback(GLFWwindow* window, double xpos, double ypos)

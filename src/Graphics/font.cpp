@@ -1,7 +1,7 @@
 
 #include "LittleEngine/Graphics/font.h"
 #include "LittleEngine/Graphics/default_font.h"
-#include "LittleEngine/error_logger.h"
+#include "LittleEngine/Utils/logger.h"
 
 
 #undef max
@@ -23,7 +23,7 @@ namespace LittleEngine::Graphics
 			if (FT_Init_FreeType(&s_ft))
 			{
 				s_initialized = false;
-				LogError("Font::Initialize: Could not init FreeType Library");
+				Utils::Logger::Critical("Font::Initialize: Could not init FreeType Library");
 			}
 
 
@@ -32,20 +32,23 @@ namespace LittleEngine::Graphics
 
 	}
 
-	void Font::LoadFromTTF(const std::string& path, int size, bool pixelated)
+	bool Font::LoadFromTTF(const std::string& path, int size, bool pixelated)
 	{
 		if (FT_New_Face(s_ft, path.c_str(), 0, &m_face))
 		{
-			LogError("Font::LoadFromTTF: Failed to load font: " + path);
+			Utils::Logger::Error("Font::LoadFromTTF: Failed to load font: " + path);
+			return false;
 		}
 		FT_Set_Pixel_Sizes(m_face, 0, size);
 
 		m_size = size;
 
 		GenerateAtlas(pixelated);
+
+		return true;
 	}
 
-	void Font::LoadFromData(const unsigned char* data, int dataSize, float size, bool pixelated)
+	bool Font::LoadFromData(const unsigned char* data, int dataSize, float size, bool pixelated)
 	{
 
 
@@ -56,13 +59,16 @@ namespace LittleEngine::Graphics
 							   &m_face)
 			)
 		{
-			LogError("Font::LoadFromTTF: Failed to load font");
+			Utils::Logger::Error("Font::LoadFromTTF: Failed to load font");
+			return false;
 		}
 		FT_Set_Pixel_Sizes(m_face, 0, size);
 
 		m_size = size;
 
 		GenerateAtlas(pixelated);
+
+		return true;
 
 	}
 

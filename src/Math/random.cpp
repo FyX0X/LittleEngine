@@ -19,13 +19,21 @@ namespace LittleEngine::Math
 	// choose random float in range [min, max]
 	float RandomFloat(float min, float max)
 	{
-		if (min >= max) ThrowError("Random::Float: min must be less than max.");
+		if (min >= max)
+		{
+			Utils::Logger::Warning("Random::Float: min must be less than max.");
+			return min; // or throw an exception
+		}
 		return min + (max - min) * u_0_1(Generator());
-	} 
+	}
 
 	int RandomInt(int min, int max)
 	{
-		if (min >= max) ThrowError("Random::Int: min must be less than max.");
+		if (min >= max)
+		{
+			Utils::Logger::Warning("Random::Int: min must be less than max.");
+			return min; // or throw an exception
+		}
 		std::uniform_int_distribution<int> dist(min, max - 1);
 		return dist(Generator());
 	}

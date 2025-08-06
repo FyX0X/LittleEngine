@@ -1,6 +1,12 @@
 #include "LittleEngine/Graphics/shader.h"
 
 
+
+#include <fstream>
+#include <sstream>
+#include <iostream>
+#include <LittleEngine/Utils/logger.h>
+
 namespace LittleEngine::Graphics
 {
 
@@ -113,7 +119,7 @@ namespace LittleEngine::Graphics
     {
         if (id != 0)
         {
-            LogError("Shader::Create : Shader was already created.");
+            Utils::Logger::Warning("Shader::Create : Shader was already created.");
             return;
         }
         if (isPath)
@@ -130,7 +136,7 @@ namespace LittleEngine::Graphics
     {
         if (s_defaultShader == 0)
         {
-            LogError("Shader constructor : Shader was not initialized.");
+            Utils::Logger::Warning("Shader constructor : Shader was not initialized.");
             Initialize();
         }
         id = s_defaultShader;
@@ -145,7 +151,7 @@ namespace LittleEngine::Graphics
         }
         else
         {
-			LogError("Shader::Cleanup : Shader was not created.");
+            Utils::Logger::Warning("Shader::Cleanup : Shader was not created.");
         }
 	}
 
@@ -153,7 +159,7 @@ namespace LittleEngine::Graphics
     {
         if (s_defaultShader != 0)
         {
-            LogError("Shader::Initialize : Shader was already initialized.");
+            Utils::Logger::Warning("Shader::Initialize : Shader was already initialized.");
             return;
         }
 
@@ -176,7 +182,7 @@ namespace LittleEngine::Graphics
     {
         if (id == 0)
         {
-			ThrowError("Shader::Use : Shader was not created. Call Create() first.");
+            Utils::Logger::Critical("Shader::Use : Shader was not created. Call Create() first.");
         }
         glUseProgram(id);
     }
@@ -263,7 +269,7 @@ namespace LittleEngine::Graphics
 
                 std::stringstream ss;
                 ss << "ERROR::SHADER_COMPILATION_ERROR of type: " << type << "\n" << infoLog;
-                ThrowError(ss.str());
+                Utils::Logger::Critical(ss.str());
             }
         }
         else
@@ -275,7 +281,7 @@ namespace LittleEngine::Graphics
 
                 std::stringstream ss;
                 ss << "ERROR::PROGRAM_LINKING_ERROR of type: " << type << "\n" << infoLog;
-                ThrowError(ss.str());
+                Utils::Logger::Critical(ss.str());
             }
         }
     }
@@ -315,7 +321,7 @@ namespace LittleEngine::Graphics
         }
         catch (std::ifstream::failure& e)
         {
-            ThrowError("ERROR::SHADER::FILE_NOT_SUCCESSFULLY_READ: " + std::string(e.what()));
+            Utils::Logger::Critical("ERROR::SHADER::FILE_NOT_SUCCESSFULLY_READ: " + std::string(e.what()));
         }
 
         return CreateShaderFromCode(vertexCode, fragmentCode);
@@ -354,7 +360,7 @@ namespace LittleEngine::Graphics
 
         GLenum err = glGetError();
         if (err != GL_NO_ERROR) {
-            LogError("OpenGL Error in Shader::CreateShaderFromCode - Code: " + std::to_string(err));
+            Utils::Logger::Error("OpenGL Error in Shader::CreateShaderFromCode - Code: " + std::to_string(err));
         }
 
         return id;

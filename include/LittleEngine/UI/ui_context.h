@@ -1,6 +1,7 @@
 #pragma once
 
 #include "LittleEngine/UI/ui_element.h"
+#include <memory>
 
 namespace LittleEngine::UI
 {

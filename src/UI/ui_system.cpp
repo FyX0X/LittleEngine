@@ -1,7 +1,7 @@
 
 #include "LittleEngine/UI/ui_system.h"
 #include "LittleEngine/UI/ui_context.h"
-#include "LittleEngine/error_logger.h"
+#include "LittleEngine/Utils/logger.h"
 
 
 // Temporary includes for glad and GLFW
@@ -63,7 +63,7 @@ namespace LittleEngine::UI
 		{
 			return it->second.get();
 		}
-		LogError("UISystem::GetContext: Context not found: " + name);
+		Utils::Logger::Warning("UISystem::GetContext: Context not found: " + name);
 		return nullptr;
 
 	}
@@ -77,7 +77,7 @@ namespace LittleEngine::UI
 		}
 		else // not found
 		{
-			LogError("UISystem::ShowContext: Context not found: " + name);
+			Utils::Logger::Warning("UISystem::ShowContext: Context not found: " + name);
 		}
 	}
 
@@ -90,7 +90,7 @@ namespace LittleEngine::UI
 		}
 		else
 		{
-			LogError("UISystem::HideContext: Context not found: " + name);
+			Utils::Logger::Warning("UISystem::HideContext: Context not found: " + name);
 		}
 	}
 
@@ -103,7 +103,7 @@ namespace LittleEngine::UI
 		}
 		else
 		{
-			LogError("UISystem::ToggleContext: Context not found: " + name);
+			Utils::Logger::Warning("UISystem::ToggleContext: Context not found: " + name);
 		}
 	}
 

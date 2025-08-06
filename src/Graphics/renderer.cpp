@@ -1,7 +1,7 @@
 #include "LittleEngine/Graphics/renderer.h"
 #include "LittleEngine/Graphics/bitmap_helper.h"
 
-#include "LittleEngine/error_logger.h"
+#include "LittleEngine/Utils/logger.h"
 #include "LittleEngine/internal.h"
 #include "LittleEngine/Utils/file_system.h"
 
@@ -79,11 +79,11 @@ namespace LittleEngine::Graphics
 	{
 
 		if (!internal::g_initialized)
-			ThrowError("RENDERER::INIT : library not initialized.");
+			Utils::Logger::Critical("RENDERER::INIT : library not initialized.");
 
 		if (m_isInitialized)
 		{
-			LogError("RENDERER::INIT : Renderer Already initized.");
+			Utils::Logger::Warning("RENDERER::INIT : Renderer Already initized.");
 			return;	
 		}
 		m_isInitialized = true;
@@ -132,7 +132,7 @@ namespace LittleEngine::Graphics
 #ifdef _DEBUG
 		GLenum err = glGetError();
 		if (err != GL_NO_ERROR) {
-			LogError("OpenGL Error during Renderer::Initialize - Code: " + std::to_string(err));
+			Utils::Logger::Error("OpenGL Error during Renderer::Initialize - Code: " + std::to_string(err));
 		}
 #endif
 
@@ -195,7 +195,10 @@ namespace LittleEngine::Graphics
 	{
 
 		if (texture.id == 0)	// problem
-			ThrowError("RENDERER::DrawRect : texture not loaded.");
+		{
+			Utils::Logger::Warning("RENDERER::DrawRect : texture not loaded.");
+			texture = s_defaultTexture;	// use default texture
+		}
 
 		// rect {x, y, w, h} (x,y) is bottom left
 		// uv is usually (0, 0, 1, 1) (u_min, v_min, u_max, v_max)
@@ -243,8 +246,6 @@ namespace LittleEngine::Graphics
 
 	void Renderer::DrawLine(const Math::Edge& e, float width, Color color)
 	{
-		if (s_defaultTexture.id == 0)	// problem
-			ThrowError("RENDERER::DrawLine : default texture not loaded.");
 
 		glm::vec2 halfWidthVector = e.normal() * width / 2.f;	// right normal
 
@@ -291,13 +292,11 @@ namespace LittleEngine::Graphics
 	
 	void Renderer::DrawPolygon(const Math::Polygon& polygon, const Color& color)
 	{
-		if (s_defaultTexture.id == 0)	// problem
-			ThrowError("RENDERER::DrawLine : default texture not loaded.");
 
 		// check if polygon is valid
 		if (!polygon.IsValid())
 		{
-			LogError("Renderer::DrawPolygon : Polygon is not valid.");
+			Utils::Logger::Warning("Renderer::DrawPolygon : Polygon is not valid, skipping");
 			return;
 		}
 
@@ -375,13 +374,10 @@ namespace LittleEngine::Graphics
 
 	void Renderer::DrawPolygonOutline(const Math::Polygon& polygon, float width, const Color& color)
 	{
-		if (s_defaultTexture.id == 0)	// problem
-			ThrowError("RENDERER::DrawPolygonOutline : default texture not loaded.");
-
 		// check if polygon is valid
 		if (!polygon.IsValid())
 		{
-			LogError("Renderer::DrawPolygonOutline : Polygon is not valid.");
+			Utils::Logger::Warning("Renderer::DrawPolygon : Polygon is not valid, skipping");
 			return;
 		}
 
@@ -395,7 +391,7 @@ namespace LittleEngine::Graphics
 	{
 		if (font.GetTexture().id == 0)
 		{
-			LogError("Renderer::DrawString : Font uninitialized.");
+			Utils::Logger::Warning("Renderer::DrawString : Font uninitialized. skipping.");
 			return;
 		}
 
@@ -440,11 +436,14 @@ namespace LittleEngine::Graphics
 	void Renderer::Clear(const Color& color)
 	{
 		if (!m_isInitialized)
-			ThrowError("RENDERER::CLEAR : library was not initialized.");
-
-		if (m_width == 0 || m_height == 0)
 		{
-			LogWarning("Renderer::Clear: framebuffer size = 0 => skipping clear.");
+			Utils::Logger::Warning("RENDERER::CLEAR : library was not initialized.");
+			return;
+		}
+
+		if (m_width <= 0 || m_height <= 0)
+		{
+			Utils::Logger::Warning("Renderer::Clear: framebuffer size <= 0 : skipping clear.");
 			return;
 		}
 
@@ -579,13 +578,22 @@ namespace LittleEngine::Graphics
 	void Renderer::Flush()
 	{
 		if (!internal::g_initialized)
-			ThrowError("RENDERER::FLUSH : library was not initialized.");
+		{
+			Utils::Logger::Error("RENDERER::FLUSH : library was not initialized.");
+			return;
+		}
 
 		if (m_width < 0 || m_height < 0)
-			ThrowError("RENDERER::FLUSH : window size was negative.");
+		{
+			Utils::Logger::Error("RENDERER::FLUSH : window size was negative.");
+			return;
+		}
 
 		if (!m_VAO)
-			ThrowError("RENDERER::FLUSH : renderer not initialized.");
+		{
+			Utils::Logger::Error("RENDERER::FLUSH : renderer not initialized.");
+			return;
+		}
 
 		if (m_vertices.empty() || m_indices.empty())
 		{
@@ -595,20 +603,20 @@ namespace LittleEngine::Graphics
 
 		if (m_textures.empty())
 		{
-			LogWarning("Renderer::Flush : texture buffer empty.");
+			Utils::Logger::Warning("Renderer::Flush : texture buffer empty.");
 			return;
 		}
 
 		if (m_camera == nullptr)
 		{
-			LogError("Renderer::Flush : Camera not set.");
+			Utils::Logger::Warning("Renderer::Flush : Camera not set.");
 			return;
 		}
 
 
 		if (m_width == 0 || m_height == 0)
 		{
-			LogWarning("Renderer::Flush: size is zero : (" + std::to_string(m_width) + ", " +std::to_string(m_height) + "), skipping flush.");
+			Utils::Logger::Warning("Renderer::Flush: size is zero : (" + std::to_string(m_width) + ", " +std::to_string(m_height) + "), skipping flush.");
 			ClearDrawQueue();
 			return;
 		}
@@ -656,7 +664,10 @@ namespace LittleEngine::Graphics
 				// Add current texture again (should succeed now)
 				slot = AddTextureToBatch(m_textures[i]);
 				if (slot == -1)
-					ThrowError("RENDERER::FLUSH : texture slot full even after flush.");
+				{
+					Utils::Logger::Error("RENDERER::FLUSH : texture slot full even after flush.");
+					return;
+				}
 
 				quadCountInBatch = 0;
 			}
@@ -724,7 +735,7 @@ namespace LittleEngine::Graphics
 
 		GLenum err = glGetError();
 		if (err != GL_NO_ERROR) {
-			LogError("OpenGL Error in Renderer::RenderBatch() - Code: " + std::to_string(err));
+			Utils::Logger::Error("OpenGL Error in Renderer::RenderBatch() - Code: " + std::to_string(err));
 		}
 
 	}
@@ -794,7 +805,7 @@ namespace LittleEngine::Graphics
 	void Renderer::BlitImage(const Texture& texture)
 	{
 		if (texture.id == 0) {
-			LogError("Renderer::BlitImage : Texture not loaded.");
+			Utils::Logger::Warning("Renderer::BlitImage : Texture not loaded.");
 			return;
 		}
 		
@@ -812,7 +823,7 @@ namespace LittleEngine::Graphics
 	void Renderer::MergeLightScene(const Texture& scene, const Texture& light)
 	{
 		if (scene.id == 0 || light.id == 0) {
-			LogError("Renderer::MergeLightScene : Scene or Light texture not loaded.");
+			Utils::Logger::Warning("Renderer::MergeLightScene : Scene or Light texture not loaded.");
 			return;
 		}
 		m_mergeLightSceneShader.Use(); // Use the merge shader

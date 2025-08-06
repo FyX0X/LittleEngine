@@ -21,7 +21,7 @@ namespace LittleEngine::Audio
 		Sound& operator=(Sound&&) = delete;
 
 		
-		void LoadFromFile(const std::string& path, ma_engine& engine, bool spatialized = false);
+		bool LoadFromFile(const std::string& path, ma_engine& engine, bool spatialized = false);
 		void Shutdown();
 
 		void Play();

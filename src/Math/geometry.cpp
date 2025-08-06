@@ -1,5 +1,5 @@
 #include "LittleEngine/Math/geometry.h"
-#include "LittleEngine/error_logger.h"
+#include "LittleEngine/Utils/logger.h"
 
 namespace LittleEngine::Math
 {
@@ -89,7 +89,7 @@ namespace LittleEngine::Math
 		if (!IsCounterClockwise())
 		{
 			std::reverse(vertices.begin(), vertices.end());
-			LogWarning("Polygon::EnsureClockwise: reversing vertices.");
+			Utils::Logger::Info("Polygon::EnsureClockwise: reversing vertices.");
 		}
 	}
 

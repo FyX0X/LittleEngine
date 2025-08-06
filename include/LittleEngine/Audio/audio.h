@@ -27,7 +27,7 @@ namespace LittleEngine::Audio
 		ma_engine* GetEngine();
 		bool IsInitialized() const { return m_initialized; }
 
-		void LoadSound(const std::string& path, Sound& sound, bool spatialized = false);
+		bool LoadSound(const std::string& path, Sound& sound, bool spatialized = false);
 
 		void SetListenerPosition(glm::vec2 pos)
 		{

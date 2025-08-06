@@ -3,7 +3,7 @@
 #include <random>
 #include <vector>
 
-#include "LittleEngine/error_logger.h"
+#include "LittleEngine/Utils/logger.h"
 
 
 
@@ -20,7 +20,11 @@ namespace LittleEngine::Math
 	template<typename T>
 	inline const T& Choose(const std::vector<T>& vec)
 	{
-		if (vec.empty()) ThrowError("Random::Choose: Cannot choose from an empty vector.");
+		if (vec.empty())
+		{
+			Utils::Logger::Warning("Random::Choose: Cannot choose from an empty vector.");
+			return T(); // return default value of T
+		}
 		std::uniform_int_distribution<size_t> dist(0, vec.size() - 1);
 		return vec[dist(Generator())];
 	}
@@ -28,7 +32,11 @@ namespace LittleEngine::Math
 	template<typename T>
 	inline T& Choose(std::vector<T>& vec)	
 	{
-		if (vec.empty()) ThrowError("Random::Choose: Cannot choose from an empty vector.");
+		if (vec.empty())
+		{
+			ThrowError("Random::Choose: Cannot choose from an empty vector.");
+			return T(); // return default value of T
+		}
 		std::uniform_int_distribution<size_t> dist(0, vec.size() - 1);
 		return vec[dist(Generator())];
 	}

@@ -1,5 +1,5 @@
 #include "LittleEngine/Graphics/render_target.h"
-#include "LittleEngine/error_logger.h"
+#include "LittleEngine/Utils/logger.h"
 
 
 namespace LittleEngine::Graphics
@@ -11,7 +11,8 @@ namespace LittleEngine::Graphics
 	{
 		if (width < 0 || height < 0)
 		{
-			ThrowError("RenderTarget::Create: size cannot be negative but was: (" + std::to_string(width) + ", " + std::to_string(height) + ")");
+			Utils::Logger::Error("RenderTarget::Create: size cannot be negative but was: (" + std::to_string(width) + ", " + std::to_string(height) + ")");
+			return false;
 		}
 		m_width = width;
 		m_height = height;

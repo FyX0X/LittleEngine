@@ -1,5 +1,5 @@
 #include "LittleEngine/Audio/audio.h"
-#include "LittleEngine/error_logger.h"
+#include "LittleEngine/Utils/logger.h"
 
 
 
@@ -12,7 +12,7 @@ namespace LittleEngine::Audio
         ma_engine_config config = ma_engine_config_init();
         ma_result result = ma_engine_init(&config, &m_engine);
         if (result != MA_SUCCESS) {
-            LogError("AudioSystem::Initialize failed: " + std::to_string(result));
+            Utils::Logger::Critical("AudioSystem::Initialize failed: " + std::to_string(result));
             m_initialized = false;
             return;
         }
@@ -40,9 +40,9 @@ namespace LittleEngine::Audio
 
 #pragma region Sound Management
 
-    void AudioSystem::LoadSound(const std::string& path, Sound& sound, bool spatialized)
+    bool AudioSystem::LoadSound(const std::string& path, Sound& sound, bool spatialized)
     {
-        sound.LoadFromFile(path, m_engine, spatialized);
+        return sound.LoadFromFile(path, m_engine, spatialized);
     }
 
 #pragma endregion

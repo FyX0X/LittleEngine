@@ -1,6 +1,6 @@
 #include "LittleEngine/Graphics/lighting.h"
 
-#include "LittleEngine/error_logger.h"
+#include "LittleEngine/Utils/logger.h"
 
 
 namespace LittleEngine::Graphics
@@ -132,11 +132,14 @@ namespace LittleEngine::Graphics
 	void LightSystem::Initialize(size_t maxQuadCount)
 	{
 		if (!internal::g_initialized)
-			ThrowError("LightSystem::Initialize : library not initialized.");
+		{
+			Utils::Logger::Warning("LightSystem::Initialize : library not initialized.");
+			return;
+		}
 
 		if (m_initialized)
 		{
-			LogError("LightSystem::Initialize : LightSystem already initialized.");
+			Utils::Logger::Warning("LightSystem::Initialize : LightSystem already initialized.");
 			return;
 		}
 
@@ -169,7 +172,7 @@ namespace LittleEngine::Graphics
 	{
 		if (!m_initialized)
 		{
-			LogError("LightSystem::Shutdown : LightSystem not initialized.");
+			Utils::Logger::Warning("LightSystem::Shutdown : LightSystem not initialized.");
 			return;
 		}
 		m_lightSources.clear();
@@ -193,19 +196,19 @@ namespace LittleEngine::Graphics
 	{
 		if (!m_initialized)
 		{
-			LogError("LightSystem::RenderLighting : LightSystem not initialized.");
+			Utils::Logger::Warning("LightSystem::RenderLighting : LightSystem not initialized.");
 			return;
 		}
 
 		if (!renderer)
 		{
-			LogError("LightSystem::RenderLighting : Renderer is null.");
+			Utils::Logger::Warning("LightSystem::RenderLighting : Renderer is null.");
 			return;
 		}
 
 		if (!target)
 		{
-			LogError("LightSystem::RenderLighting : RenderTarget is null.");
+			Utils::Logger::Warning("LightSystem::RenderLighting : RenderTarget is null.");
 			return;
 		}
 
@@ -293,24 +296,24 @@ namespace LittleEngine::Graphics
 	{
 		if (!m_initialized)
 		{
-			LogError("LightSystem::RenderLighting : LightSystem not initialized.");
+			Utils::Logger::Warning("LightSystem::RenderLighting : LightSystem not initialized.");
 			return;
 		}
 		if (m_verticesLightBatches.size() != m_lightSources.size())
 		{
-			LogError("LightSystem::RenderLighting : Precomputed shadow vertices not initialized.");
+			Utils::Logger::Warning("LightSystem::RenderLighting : Precomputed shadow vertices not initialized.");
 			return;
 		}
 
 		if (!renderer)
 		{
-			LogError("LightSystem::RenderLighting : Renderer is null.");
+			Utils::Logger::Warning("LightSystem::RenderLighting : Renderer is null.");
 			return;
 		}
 
 		if (!target)
 		{
-			LogError("LightSystem::RenderLighting : RenderTarget is null.");
+			Utils::Logger::Warning("LightSystem::RenderLighting : RenderTarget is null.");
 			return;
 		}
 
@@ -395,7 +398,7 @@ namespace LittleEngine::Graphics
 	{
 		if (!m_initialized)
 		{
-			LogError("LightSystem::PrecomputeShadowVertices : LightSystem not initialized.");
+			Utils::Logger::Warning("LightSystem::PrecomputeShadowVertices : LightSystem not initialized.");
 			return;
 		}
 		m_verticesLightBatches.clear(); // clear previous batches
@@ -470,7 +473,7 @@ namespace LittleEngine::Graphics
 		Math::Polygon poly = { vertices };
 		if (!poly.IsValid())
 		{
-			LogError("LightSystem::CreateObstacle : Polygon is not valid.");
+			Utils::Logger::Warning("LightSystem::CreateObstacle : Polygon is not valid.");
 			return nullptr;
 		}
 

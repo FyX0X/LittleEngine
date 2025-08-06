@@ -1,5 +1,5 @@
 #include "LittleEngine/Audio/sound.h"
-#include "LittleEngine/error_logger.h"
+#include "LittleEngine/Utils/logger.h"
 
 
 
@@ -8,7 +8,7 @@ namespace LittleEngine::Audio
 
 #pragma region Object Management
 
-	void Sound::LoadFromFile(const std::string& path, ma_engine& engine, bool spatialized)
+	bool Sound::LoadFromFile(const std::string& path, ma_engine& engine, bool spatialized)
 	{
 		ma_result result;
 
@@ -22,11 +22,12 @@ namespace LittleEngine::Audio
 		}
 
 		if (result != MA_SUCCESS) {
-			LogError("Sound::Initialize: could not load sound from file: " + path + " (Error Code: " + std::to_string(result) + ')');
-			return;
+			Utils::Logger::Error("Sound::Initialize: could not load sound from file: " + path + " (Error Code: " + std::to_string(result) + ')');
+			return false;
 		}
 		m_isSpatialized = spatialized;
 		m_isInitialized = true;
+		return true;
 	}
 
 	void Sound::Shutdown()
@@ -43,15 +44,19 @@ namespace LittleEngine::Audio
 
 	void Sound::Play()
 	{
+		if (!m_isInitialized) {
+			Utils::Logger::Warning("Sound::Play: skipping: Sound is not initialized.");
+			return;
+		}
 		ma_result result;
 		result = ma_sound_seek_to_pcm_frame(&m_sound, 0); // Rewind
 		if (result != MA_SUCCESS) {
-			LogError("Sound::Play: Could not rewind the sound.  (Error Code: " + std::to_string(result) + ')');
+			Utils::Logger::Warning("Sound::Play: Could not rewind the sound.  (Error Code: " + std::to_string(result) + ')');
 			return;
 		}
 		result = ma_sound_start(&m_sound);
 		if (result != MA_SUCCESS) {
-			LogError("Sound::Sound(): could not play the sound.  (Error Code: " + std::to_string(result) + ')');
+			Utils::Logger::Warning("Sound::Sound(): could not play the sound.  (Error Code: " + std::to_string(result) + ')');
 			return;
 		}
 
@@ -59,9 +64,13 @@ namespace LittleEngine::Audio
 
 	void Sound::Stop()
 	{
+		if (!m_isInitialized) {
+			Utils::Logger::Warning("Sound::Stop: skipping: Sound is not initialized.");
+			return;
+		}
 		ma_result result = ma_sound_stop(&m_sound);
 		if (result != MA_SUCCESS) {
-			LogError("Sound::Stop: could not stop the sound.  (Error Code: " + std::to_string(result) + ')');
+			Utils::Logger::Warning("Sound::Stop: could not stop the sound.  (Error Code: " + std::to_string(result) + ')');
 			return;
 		}
 	}
@@ -99,7 +108,7 @@ namespace LittleEngine::Audio
 	{
 		if (!m_isSpatialized)
 		{
-			LogError("Sound::SetLocation: sound is not spatialized.");
+			Utils::Logger::Warning("Sound::SetLocation: sound is not spatialized.");
 			return;
 		}
 		ma_sound_set_position(&m_sound, x, y, z);
@@ -109,7 +118,7 @@ namespace LittleEngine::Audio
 	{
 		if (!m_isSpatialized)
 		{
-			LogError("Sound::SetAttenuation: sound is not spatialized.");
+			Utils::Logger::Warning("Sound::SetAttenuation: sound is not spatialized.");
 			return;
 		}
 		if (attenuation)
@@ -124,7 +133,7 @@ namespace LittleEngine::Audio
 	{
 		if (!m_isSpatialized)
 		{
-			LogError("Sound::SetRolloff: sound is not spatialized.");
+			Utils::Logger::Warning("Sound::SetRolloff: sound is not spatialized.");
 			return;
 		}
 		ma_sound_set_rolloff(&m_sound, value);
@@ -134,7 +143,7 @@ namespace LittleEngine::Audio
 	{
 		if (!m_isSpatialized)
 		{
-			LogError("Sound::SetMinDistance: sound is not spatialized.");
+			Utils::Logger::Warning("Sound::SetMinDistance: sound is not spatialized.");
 			return;
 		}
 		ma_sound_set_min_distance(&m_sound, value);
@@ -144,7 +153,7 @@ namespace LittleEngine::Audio
 	{
 		if (!m_isSpatialized)
 		{
-			LogError("Sound::SetMaxDistance: sound is not spatialized.");
+			Utils::Logger::Warning("Sound::SetMaxDistance: sound is not spatialized.");
 			return;
 		}
 		ma_sound_set_max_distance(&m_sound, value);
@@ -154,7 +163,7 @@ namespace LittleEngine::Audio
 	{
 		if (!m_isSpatialized)
 		{
-			LogError("Sound::SetMinGain: sound is not spatialized.");
+			Utils::Logger::Warning("Sound::SetMinGain: sound is not spatialized.");
 			return;
 		}
 		ma_sound_set_min_gain(&m_sound, value);
@@ -164,7 +173,7 @@ namespace LittleEngine::Audio
 	{
 		if (!m_isSpatialized)
 		{
-			LogError("Sound::SetMaxGain: sound is not spatialized.");
+			Utils::Logger::Warning("Sound::SetMaxGain: sound is not spatialized.");
 			return;
 		}
 		ma_sound_set_max_gain(&m_sound, value);

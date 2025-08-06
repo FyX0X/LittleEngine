@@ -1,5 +1,6 @@
 #include "LittleEngine/Graphics/tilemap_renderer.h"
 
+#include "LittleEngine/Utils/logger.h"
 
 namespace LittleEngine::Graphics
 {
@@ -27,7 +28,7 @@ namespace LittleEngine::Graphics
 	{
 		if (m_map == nullptr)
 		{
-			LogError("TilemapRenderer::Draw: map was not initialized. Did you forget to call SetMap() or did you delete the original data?");
+			Utils::Logger::Warning("TilemapRenderer::Draw: map was not initialized. Did you forget to call SetMap() or did you delete the original data?, skipping render call.");
 			return;
 		}
 		DrawMap(m_map, m_width, m_height, m_pos, renderer);

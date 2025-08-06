@@ -26,8 +26,8 @@ namespace LittleEngine::Graphics
 
 		static void Initialize();
 
-		void LoadFromTTF(const std::string& path, int size, bool pixelated = false);	
-		void LoadFromData(const unsigned char* data, int dataSize, float size, bool pixelated = false);
+		bool LoadFromTTF(const std::string& path, int size, bool pixelated = false);	
+		bool LoadFromData(const unsigned char* data, int dataSize, float size, bool pixelated = false);
 
 		//const stbtt_bakedchar* GetGlyphs() const { return m_chars; }
 		//const void Font::GetQuad(char c, float& xpos, float& ypos, stbtt_aligned_quad& q) const;

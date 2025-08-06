@@ -4,10 +4,11 @@
 #include <GLFW/glfw3.h>
 
 #include <stb_image/stb_image.h>
-
-#include "LittleEngine/error_logger.h"
-
 #include <cassert>
+
+#include "LittleEngine/Utils/logger.h"
+#include "LittleEngine/Utils/debug_tools.h"
+
 
 
 namespace LittleEngine::Platform
@@ -33,7 +34,7 @@ namespace LittleEngine::Platform
 		m_window = glfwCreateWindow(config.width, config.height, config.title.c_str(), NULL, NULL);
 		if (m_window == NULL)
 		{
-			LogError("Failed to create GLFW window");
+			Utils::Logger::Critical("Failed to create GLFW window");
 			glfwTerminate();
 			return false;
 		}
@@ -48,6 +49,21 @@ namespace LittleEngine::Platform
 			std::cout << "Failed to initialize GLAD" << std::endl;
 			return false;
 		}
+
+#if DEVELOPMENT_BUILD == 1
+		// Set the OpenGL debug callback
+		int flags;
+		glGetIntegerv(GL_CONTEXT_FLAGS, &flags);
+		if (flags & GL_CONTEXT_FLAG_DEBUG_BIT)
+		{
+			glEnable(GL_DEBUG_OUTPUT);
+			glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+			glDebugMessageCallback(Utils::DebugTools::glDebugOutput, nullptr);
+			glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE);
+		}
+#endif
+
+
 
 		glfwSetWindowUserPointer(m_window, &m_state);
 		SetVsync(true);
@@ -91,7 +107,7 @@ namespace LittleEngine::Platform
 
 		if (!m_window)
 		{
-			LogError("GlfwWindow::Close: Window not initialized.");
+			Utils::Logger::Warning("GlfwWindow::Close: Window not initialized.");
 			return;
 		}
 		glfwDestroyWindow(m_window);
@@ -133,7 +149,7 @@ namespace LittleEngine::Platform
 		case WindowMode::ResizableWindowed:
 			break;
 		default:
-			LogError("GlfwWindow::SetWindowMode: Not yet implemented.");
+			Utils::Logger::Warning("GlfwWindow::SetWindowMode: Not yet implemented.");
 			break;
 		}
 
@@ -144,7 +160,7 @@ namespace LittleEngine::Platform
 	{
 		if (!m_window)
 		{
-			LogError("GlfwWindow::SetIcon: Window not initialized.");
+			Utils::Logger::Warning("GlfwWindow::SetIcon: Window not initialized.");
 			return;
 		}
 		int width, height, nrChannels;
@@ -162,7 +178,7 @@ namespace LittleEngine::Platform
 		}
 		else
 		{
-			LogError("GlfwWindow::SetIcon: failed to load icon: " + path);
+			Utils::Logger::Warning("GlfwWindow::SetIcon: failed to load icon: " + path);
 		}
 	}
 

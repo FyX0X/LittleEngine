@@ -1,6 +1,6 @@
 #include "LittleEngine/Utils/file_system.h"
 #include "LittleEngine/internal.h"
-#include "LittleEngine/error_logger.h"
+#include "LittleEngine/Utils/logger.h"
 #include <filesystem>
 #include <sstream>
 #include <fstream>
@@ -44,7 +44,7 @@ namespace LittleEngine::Utils::FileSystem
 		ss << prefix << 0 << ext;
 		path = folder + "/" + ss.str();
 
-		LogWarning("Storage::GetNextFreeFilePath: too many iterations to find new available filename: overwriting: " + path.string());
+		Utils::Logger::Warning("Storage::GetNextFreeFilePath: too many iterations to find new available filename: overwriting: " + path.string());
 		return path.string();
 	}
 

@@ -1,6 +1,6 @@
 #include "LittleEngine/Graphics/texture.h"
 
-#include "LittleEngine/error_logger.h"
+#include "LittleEngine/Utils/logger.h"
 #include "LittleEngine/Graphics/bitmap_helper.h"
 #include <stb_image/stb_image.h>
 #include <vector>
@@ -47,7 +47,7 @@ namespace LittleEngine::Graphics
             break;
         default:
             baseFormat = GL_RGB; // fallback, maybe log warning here
-			LogWarning("Texture::CreateEmptyTexture: Unsupported internal format " + std::to_string(internalFormat) + ", using GL_RGB as fallback.");
+			Utils::Logger::Error("Texture::CreateEmptyTexture: Unsupported internal format " + std::to_string(internalFormat) + ", using GL_RGB as fallback.");
             break;
         }
         // For HDR formats like GL_RGB16F, you use GL_RGB and GL_FLOAT for type
@@ -81,7 +81,8 @@ namespace LittleEngine::Graphics
         }
         else
         {
-            LogError("Texture::LoadFromFile: Failed to load texture: " + path);
+            Utils::Logger::Warning("Texture::LoadFromFile: Failed to load texture: " + path + " using default texture instead.");
+            *this = GetDefaultTexture();
         }
         stbi_image_free(data);
 
@@ -129,7 +130,9 @@ namespace LittleEngine::Graphics
         switch (channelCount)
         {
         default:
-            LogError("Texture::LoadFromData : allowed channelCount are {1, 2, 3, 4} but " + std::to_string(channelCount) + " was found.");
+            Utils::Logger::Warning("Texture::LoadFromData : allowed channelCount are {1, 2, 3, 4} but " + std::to_string(channelCount) + " was found. defaulting to 4");
+			channelCount = 4; // default to RGBA
+            channelType = GL_RGBA;
             break;
         case 1:
             channelType = GL_RED;
@@ -184,7 +187,8 @@ namespace LittleEngine::Graphics
     {
         if (sample >= defaults::MAX_TEXTURE_SLOTS)
         {
-            ThrowError("Texture::Bind : sample (" + std::to_string(sample) + ") >= MAX_TEXTURE_SLOTS (" + std::to_string(defaults::MAX_TEXTURE_SLOTS) + ')');
+            Utils::Logger::Error("Texture::Bind : sample (" + std::to_string(sample) + ") >= MAX_TEXTURE_SLOTS (" + std::to_string(defaults::MAX_TEXTURE_SLOTS) + ')');
+            return;
         }
 
         glActiveTexture(GL_TEXTURE0 + sample);
@@ -228,7 +232,7 @@ namespace LittleEngine::Graphics
     {
         if (s_defaultTexId != 0)
         {
-            LogError("Texture::CreateDefaultTexture : default already exists.");
+            Utils::Logger::Warning("Texture::CreateDefaultTexture : default already exists.");
             return;
         }
 
@@ -260,7 +264,7 @@ namespace LittleEngine::Graphics
     {
         if ((texture.width % cellWidth != 0) || texture.height % cellHeight != 0)
         {
-            ThrowError("TextureAtlas constructor: texture width / height is not multiple of cell width / height.");
+            Utils::Logger::Warning("TextureAtlas constructor: texture width / height is not multiple of cell width / height.");
         }
 
         this->textureWidth = texture.width;

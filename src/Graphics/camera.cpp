@@ -2,7 +2,7 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 
-#include "LittleEngine/error_logger.h"
+#include "LittleEngine/Utils/logger.h"
 
 namespace LittleEngine::Graphics
 {
@@ -33,7 +33,8 @@ namespace LittleEngine::Graphics
 	{
 		if (stiffness < 0.f)
 		{
-			ThrowError("Camera::FollowSpring: stiffness was negative: " + std::to_string(stiffness));
+			Utils::Logger::Error("Camera::FollowSpring: stiffness was negative: " + std::to_string(stiffness) + ", using 1 instead");
+			stiffness = 1.f;		// default stiffness
 		}
 
 		if (damping < 0.f)		// for critical damping.
