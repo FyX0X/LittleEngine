@@ -113,7 +113,7 @@ namespace LittleEngine
 
 
 
-#if ENABLE_IMGUI == 1
+#ifdef ENABLE_IMGUI
 		Platform::ImGuiInitialize(s_window.get());
 #endif
 
@@ -131,7 +131,7 @@ namespace LittleEngine
 	void Shutdown()
 	{
 
-#if ENABLE_IMGUI == 1
+#ifdef ENABLE_IMGUI
 		Platform::ImGuiShutdown();
 #endif
 
@@ -171,7 +171,7 @@ namespace LittleEngine
 			Input::UpdateInputState();
 
 
-#if ENABLE_IMGUI == 1
+#ifdef ENABLE_IMGUI
 			Platform::ImGuiNewFrame();
 #endif
 
@@ -218,7 +218,7 @@ namespace LittleEngine
 			Input::UpdatePreviousInputState();
 
 
-#if ENABLE_IMGUI == 1
+#ifdef ENABLE_IMGUI
 			Platform::ImGuiRender();
 #endif
 

@@ -2,10 +2,10 @@
 
 #include "LittleEngine/Core/window.h"
 
-#if USE_GLFW == 1
+#ifdef USE_GLFW
 #include "LittleEngine/Platform/GLFW/platform_glfw.h"
 using PlatformImpl = LittleEngine::Platform::PlatformGlfw;
-#elif USE_SDL == 1
+#elif defined(USE_SDL)
 #error "SDL platform is not implemented yet."
 // not defined yet
 #endif
