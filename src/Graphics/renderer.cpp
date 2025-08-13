@@ -295,40 +295,10 @@ namespace LittleEngine::Graphics
 
 		// check if polygon is valid
 		if (!polygon.IsValid())
-		{
-			Utils::Logger::Warning("Renderer::DrawPolygon : Polygon is not valid, skipping");
 			return;
-		}
 
 		int vertexCount = static_cast<int>(polygon.vertices.size());
 
-		//int index = m_vertices.size();
-
-		//// push all vertices to the vertex buffer
-		//for (size_t i = 0; i < vertexCount; i++)
-		//{
-		//	Vertex v{ polygon.vertices[i], {0, 0}, color, s_defaultTexture.id };
-		//	m_vertices.push_back(v);
-		//}
-
-
-		//for (int i = 1; i < vertexCount - 1; ++i)
-		//{
-		//	//draw a triangle from the first vertex to the current vertex and the next vertex
-		//	m_indices.push_back(index + 0); // first vertex
-		//	m_indices.push_back(index + i); // current vertex
-		//	m_indices.push_back(index + i + 1); // next vertex
-		//}
-
-		//// add the default texture to the texture buffer
-		//m_textures.push_back(s_defaultTexture);
-
-		//// update the quad count ???????????
-		//m_quadCount += vertexCount - 2;		// overcounting, but not a problem for now
-
-
-
-		// NOT working because flush uses quads only.
 
 		int triangleCount = vertexCount - 2; // number of triangles in the polygon
 
@@ -376,10 +346,7 @@ namespace LittleEngine::Graphics
 	{
 		// check if polygon is valid
 		if (!polygon.IsValid())
-		{
-			Utils::Logger::Warning("Renderer::DrawPolygon : Polygon is not valid, skipping");
 			return;
-		}
 
 		for (Math::Edge& e : polygon.GetEdges())
 		{
@@ -390,10 +357,7 @@ namespace LittleEngine::Graphics
 	void Renderer::DrawString(const std::string& text, const glm::vec2 pos, const Font& font, Color color, float scale)
 	{
 		if (font.GetTexture().id == 0)
-		{
-			Utils::Logger::Warning("Renderer::DrawString : Font uninitialized. skipping.");
 			return;
-		}
 
 		font.Bind();
 
@@ -622,18 +586,6 @@ namespace LittleEngine::Graphics
 		}
 
 
-
-		//if (m_renderTarget == nullptr)	// draw to screen
-		//{
-		//	glViewport(0, 0, m_width, m_height);
-		//}
-		//else
-		//{
-		//	glm::ivec2 size = m_renderTarget->GetSize();
-		//	glViewport(0, 0, size.x, size.y);
-		//	m_renderTarget->Bind();
-		//}
-
 		// Bind shader
 		shader.Use();
 
@@ -804,10 +756,8 @@ namespace LittleEngine::Graphics
 
 	void Renderer::BlitImage(const Texture& texture)
 	{
-		if (texture.id == 0) {
-			Utils::Logger::Warning("Renderer::BlitImage : Texture not loaded.");
+		if (texture.id == 0)
 			return;
-		}
 		
 		m_blitShader.Use(); // Use the blit shader
 		//m_blitShader.SetInt("uTexture", 0); // Set the texture sampler to 0 NO need to set it again, already set in Initialize
@@ -822,10 +772,9 @@ namespace LittleEngine::Graphics
 
 	void Renderer::MergeLightScene(const Texture& scene, const Texture& light)
 	{
-		if (scene.id == 0 || light.id == 0) {
-			Utils::Logger::Warning("Renderer::MergeLightScene : Scene or Light texture not loaded.");
+		if (scene.id == 0 || light.id == 0)
 			return;
-		}
+
 		m_mergeLightSceneShader.Use(); // Use the merge shader
 		scene.Bind(0); // Bind scene texture to slot 0
 		light.Bind(1); // Bind light texture to slot 1

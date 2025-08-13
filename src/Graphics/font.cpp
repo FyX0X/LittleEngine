@@ -36,7 +36,7 @@ namespace LittleEngine::Graphics
 	{
 		if (FT_New_Face(s_ft, path.c_str(), 0, &m_face))
 		{
-			Utils::Logger::Error("Font::LoadFromTTF: Failed to load font: " + path);
+			Utils::Logger::Warning("Font::LoadFromTTF: Failed to load font: " + path);
 			return false;
 		}
 		FT_Set_Pixel_Sizes(m_face, 0, size);
@@ -56,10 +56,9 @@ namespace LittleEngine::Graphics
 							   data,			// Pointer to the .ttf data in memory
 							   dataSize,		// Size of the font data in bytes
 							   0,				// Face index (usually 0 unless font has multiple faces)
-							   &m_face)
-			)
+							   &m_face))
 		{
-			Utils::Logger::Error("Font::LoadFromTTF: Failed to load font");
+			Utils::Logger::Warning("Font::LoadFromTTF: Failed to load font");
 			return false;
 		}
 		FT_Set_Pixel_Sizes(m_face, 0, size);

@@ -109,7 +109,6 @@ namespace LittleEngine::Graphics
 #pragma region DRAW POLYGON
 		// Only works with convex polygons
 		void DrawPolygon(const Math::Polygon& polygon, const Color& color = Colors::White);
-
 		void DrawPolygonOutline(const Math::Polygon& polygon, float width = 1.f, const Color& color = Colors::White);
 
 #pragma endregion

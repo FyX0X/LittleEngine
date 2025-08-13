@@ -22,7 +22,7 @@ namespace LittleEngine::Audio
 		}
 
 		if (result != MA_SUCCESS) {
-			Utils::Logger::Error("Sound::Initialize: could not load sound from file: " + path + " (Error Code: " + std::to_string(result) + ')');
+			Utils::Logger::Warning("Sound::LoadFromFile: could not load sound from file: " + path + " (Error Code: " + std::to_string(result) + ')');
 			return false;
 		}
 		m_isSpatialized = spatialized;
@@ -44,10 +44,9 @@ namespace LittleEngine::Audio
 
 	void Sound::Play()
 	{
-		if (!m_isInitialized) {
-			Utils::Logger::Warning("Sound::Play: skipping: Sound is not initialized.");
+		if (!m_isInitialized)
 			return;
-		}
+
 		ma_result result;
 		result = ma_sound_seek_to_pcm_frame(&m_sound, 0); // Rewind
 		if (result != MA_SUCCESS) {
