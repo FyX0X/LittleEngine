@@ -164,6 +164,7 @@ namespace LittleEngine::Platform
 					if (m_state.windowResizeCallback) {
 						m_state.windowResizeCallback(event.window.data1, event.window.data2);
 					}
+
 					m_state.width = event.window.data1;
 					m_state.height = event.window.data2;
 					break;
