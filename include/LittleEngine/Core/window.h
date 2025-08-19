@@ -73,6 +73,24 @@ namespace LittleEngine
 
 		Callbacks::Keyboard::Key keyCallback = nullptr;
 		Callbacks::Keyboard::Char charCallback = nullptr;
+
+
+		void Reset()
+		{
+			title = "Default Title";
+			width = 1280;
+			height = 720;
+			mode = WindowMode::ResizableWindowed;
+			vsyncEnabled = true;
+			windowResizeCallback = nullptr;
+			windowFocusCallback = nullptr;
+			windowCloseCallback = nullptr;
+			mouseMoveCallback = nullptr;
+			mouseScrollCallback = nullptr;
+			mouseButtonCallback = nullptr;
+			keyCallback = nullptr;
+			charCallback = nullptr;
+		}
 	};
 	
 
@@ -101,6 +119,7 @@ namespace LittleEngine
 		virtual void GetWindowSize(int& width, int& height) const = 0;
 		virtual bool ShouldClose() const = 0;
 		virtual void* GetNativeWindowHandle() = 0; // returns the native window handle, if applicable (e.g. GLFWwindow* for GLFW)
+		virtual void* GetNativeContext() = 0; // returns the native context handle, if applicable (e.g. SDL_GLContext for SDL2)
 
 
 		// =========

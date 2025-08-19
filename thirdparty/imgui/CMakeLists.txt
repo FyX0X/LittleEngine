@@ -7,11 +7,21 @@ target_sources(imgui PRIVATE
 "${CMAKE_CURRENT_SOURCE_DIR}/imgui/imgui_demo.cpp"
 "${CMAKE_CURRENT_SOURCE_DIR}/imgui/imgui_draw.cpp"
 "${CMAKE_CURRENT_SOURCE_DIR}/imgui/imgui_tables.cpp"
-"${CMAKE_CURRENT_SOURCE_DIR}/imgui/imgui_widgets.cpp"
-"${CMAKE_CURRENT_SOURCE_DIR}/imgui/backends/imgui_impl_glfw.cpp"
-"${CMAKE_CURRENT_SOURCE_DIR}/imgui/backends/imgui_impl_opengl3.cpp")
+"${CMAKE_CURRENT_SOURCE_DIR}/imgui/imgui_widgets.cpp")
+
 
 target_include_directories(imgui PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/imgui")
 
-
+if (PLATFORM STREQUAL "GLFW")
+target_sources(imgui PRIVATE
+"${CMAKE_CURRENT_SOURCE_DIR}/imgui/backends/imgui_impl_glfw.cpp"
+"${CMAKE_CURRENT_SOURCE_DIR}/imgui/backends/imgui_impl_opengl3.cpp")
 target_link_libraries(imgui PUBLIC glfw glad)
+elseif (PLATFORM STREQUAL "SDL")
+target_sources(imgui PRIVATE
+"${CMAKE_CURRENT_SOURCE_DIR}/imgui/backends/imgui_impl_sdl3.cpp"
+"${CMAKE_CURRENT_SOURCE_DIR}/imgui/backends/imgui_impl_opengl3.cpp")
+target_link_libraries(imgui PUBLIC SDL3-static glad)
+else()
+message(FATAL_ERROR "Unknown platform: ${PLATFORM}. Please set PLATFORM to either GLFW or SDL.")
+endif()

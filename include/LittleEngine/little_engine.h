@@ -98,6 +98,7 @@
  * 
  * use custom button struct instead of GLFW keycode.
  * 
+ * add text input (not just key input)
  * scroll
  * mouse get pos ok
  * picking ??

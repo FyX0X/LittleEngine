@@ -2,18 +2,28 @@
 #include "LittleEngine/Input/input.h"
 
 #include "LittleEngine/Utils/logger.h"
-
-
+#include "LittleEngine/Core/window.h" // for callbacks
 
 #include <glad/glad.h>
+
+#ifdef USE_GLFW
+
 #include <GLFW/glfw3.h>
+#endif // USE_GLFW
+
+
 
 
 #if ENABLE_IMGUI == 1
 #include <imgui.h>
+
+#ifdef USE_GLFW
 #include <backends/imgui_impl_glfw.h>
 #include <backends/imgui_impl_opengl3.h>
-
+#elif defined(USE_SDL)
+#include <backends/imgui_impl_sdl3.h>
+#include <backends/imgui_impl_opengl3.h>
+#endif // USE_GLFW
 #endif // 
 
 
@@ -23,13 +33,13 @@
 #include <array>
 
 
-constexpr int MaxKeyCode = GLFW_KEY_LAST;
-constexpr int MaxMouseButton = GLFW_MOUSE_BUTTON_LAST;
 
 
 namespace LittleEngine::Input
 {
 #pragma region static containers
+	constexpr int MaxKeyCode = static_cast<uint16_t>(KeyCode::SIZE);
+	constexpr int MaxMouseButton = static_cast<uint8_t>(MouseButton::SIZE);
 
 	// one vector<Command> for each key. allows for multiple command per key.
 	static std::array<std::vector<std::unique_ptr<Command>>, MaxKeyCode> s_keyBindings{};
@@ -63,14 +73,6 @@ namespace LittleEngine::Input
 
 	void Initialize(GLFWwindow* window, const glm::ivec2& windowSize)
 	{
-
-		glfwSetKeyCallback(window, key_callback);
-		glfwSetMouseButtonCallback(window, mouse_button_callback);
-		glfwSetCursorPosCallback(window, cursor_position_callback);
-		glfwSetScrollCallback(window, scroll_callback);
-		glfwSetWindowFocusCallback(window, focus_callback);
-
-
 		ResetKeyState();	// just to be sure.
 
 		UpdateWindowSize(windowSize.x, windowSize.y);
@@ -89,18 +91,17 @@ namespace LittleEngine::Input
 	{
 		
 		// reset all axis;
-		for (auto& [key, value] : s_axices)
+		for (auto& [name, axis] : s_axices)
 		{
-			value = 0.f;
+			axis = 0.f;
 		}
 
-		//std::cout << "key D: previous (" << s_previousKeyState[68] << "), current (" << s_currentKeyState[68] << ")\n";
-
 		// Keys
-		for (int key = 0; key < s_keyBindings.size(); ++key)
+		for (uint16_t i = 0; i < MaxKeyCode; ++i)
 		{
-			bool previous = s_previousKeyState[key];
-			bool current = s_currentKeyState[key];
+			KeyCode key = static_cast<KeyCode>(i);
+			bool previous = s_previousKeyState[i];
+			bool current = s_currentKeyState[i];
 			
 			// update axis.
 			if (current)
@@ -108,47 +109,47 @@ namespace LittleEngine::Input
 				UpdateAxis(key);
 			}
 
-			std::vector<std::unique_ptr<Command>>& cmds = s_keyBindings[key];
+			std::vector<std::unique_ptr<Command>>& cmds = s_keyBindings[i];
 			if (cmds.empty()) continue;
 
 
 			InputEventType type = GetInputEventType(previous, current);
 
 
-			for (size_t i = 0; i < cmds.size(); i++)
+			for (size_t j = 0; j < cmds.size(); j++)
 			{
-				CallCommand(cmds[i].get(), type);
+				CallCommand(cmds[j].get(), type);
 			}
 
 
 		}
 
 		// Same for mouse buttons...
-		for (int btn = 0; btn < s_mouseButtonBindings.size(); ++btn)
+		for (uint8_t i = 0; i < MaxMouseButton; ++i)
 		{
-			bool current = s_currentMouseButtonState[btn];
-			bool previous = s_previousMouseButtonState[btn];
+			MouseButton btn = static_cast<MouseButton>(i);
+			bool current = s_currentMouseButtonState[i];
+			bool previous = s_previousMouseButtonState[i];
 
-			if (btn >= s_mouseButtonBindings.size()) continue;
 
-			std::vector<std::unique_ptr<Command>>& cmds = s_mouseButtonBindings[btn];
+			std::vector<std::unique_ptr<Command>>& cmds = s_mouseButtonBindings[i];
 			if (cmds.empty()) continue;
 
 			InputEventType type = GetInputEventType(previous, current);
 			
-			for (size_t i = 0; i < cmds.size(); i++)
+			for (size_t j = 0; j < cmds.size(); j++)
 			{
-				CallCommand(cmds[i].get(), type);
+				CallCommand(cmds[j].get(), type);
 			}
 		}
 
 		// clamp axices
-		for (auto& [key, value] : s_axices)
+		for (auto& [name, axis] : s_axices)
 		{
-			if (value > 1)
-				value = 1.f;
-			else if (value < -1)
-				value = -1.f;
+			if (axis > 1)
+				axis = 1.f;
+			else if (axis < -1)
+				axis = -1.f;
 		}
 
 
@@ -216,13 +217,10 @@ namespace LittleEngine::Input
 
 	void UpdateAxis(KeyCode key)
 	{
-		if (key < 0 || key >= MaxKeyCode)	// just in case
-		{
-			Utils::Logger::Warning("Input::UpdateAxis: incorrect key: " + std::to_string(key));
-		}
+		int keyIndex = static_cast<uint16_t>(key);
 
-		std::vector<std::string>& posAxices = s_posKeyAxisBindings[key];
-		std::vector<std::string>& negAxices = s_negKeyAxisBindings[key];
+		std::vector<std::string>& posAxices = s_posKeyAxisBindings[keyIndex];
+		std::vector<std::string>& negAxices = s_negKeyAxisBindings[keyIndex];
 
 		if (!posAxices.empty())
 		{
@@ -276,32 +274,32 @@ namespace LittleEngine::Input
 
 	bool IsKeyDown(KeyCode key) 
 	{
-		return s_currentKeyState[key];
+		return s_currentKeyState[static_cast<uint16_t>(key)];
 	}
 
 	bool IsKeyPressed(KeyCode key) 
 	{
-		return s_currentKeyState[key] && !s_previousKeyState[key];
+		return s_currentKeyState[static_cast<uint16_t>(key)] && !s_previousKeyState[static_cast<uint16_t>(key)];
 	}
 
 	bool IsKeyReleased(KeyCode key) 
 	{
-		return !s_currentKeyState[key] && s_previousKeyState[key];
+		return !s_currentKeyState[static_cast<uint16_t>(key)] && s_previousKeyState[static_cast<uint16_t>(key)];
 	}
 
 	bool IsMouseButtonDown(MouseButton mb)
 	{
-		return s_currentMouseButtonState[mb];
+		return s_currentMouseButtonState[static_cast<uint8_t>(mb)];
 	}
 
 	bool IsMouseButtonPressed(MouseButton mb)
 	{
-		return s_currentMouseButtonState[mb] && !s_previousMouseButtonState[mb];
+		return s_currentMouseButtonState[static_cast<uint8_t>(mb)] && !s_previousMouseButtonState[static_cast<uint8_t>(mb)];
 	}
 
 	bool IsMouseButtonReleased(MouseButton mb)
 	{
-		return !s_currentMouseButtonState[mb] && s_previousMouseButtonState[mb];
+		return !s_currentMouseButtonState[static_cast<uint8_t>(mb)] && s_previousMouseButtonState[static_cast<uint8_t>(mb)];
 	}
 
 #pragma endregion
@@ -330,27 +328,21 @@ namespace LittleEngine::Input
 			return;
 		}
 
-		s_posKeyAxisBindings[keyPositive].push_back(name);
-		s_negKeyAxisBindings[keyNegative].push_back(name);
+		s_posKeyAxisBindings[static_cast<uint16_t>(keyPositive)].push_back(name);
+		s_negKeyAxisBindings[static_cast<uint16_t>(keyNegative)].push_back(name);
 
 		
 	}
 
 	void BindKeyToCommand(KeyCode key, std::unique_ptr<Command> cmd)
 	{
-		if (key < 0 || key > MaxKeyCode)
-		{
-			Utils::Logger::Warning("Input::BindKeyToCommand: invalid key: " + std::to_string(key));
-			return;
-		}
-
 		// check if action already binded to key.
-		auto& cmds = s_keyBindings[key];
+		auto& cmds = s_keyBindings[static_cast<uint16_t>(key)];
 		for (size_t i = 0; i < cmds.size(); i++)
 		{
 			if (typeid(*cmds[i]) == typeid(*cmd))		// *cmd and not cmd.get() to dereference and get Actual type (not Command)
 			{
-				Utils::Logger::Warning("Input::BindKeyToCommand: Command " + cmd->GetName() + " already binded to key: " + std::to_string(key));
+				Utils::Logger::Warning("Input::BindKeyToCommand: Command " + cmd->GetName() + " already binded to key: " + std::to_string(static_cast<uint16_t>(key)));
 				return;
 			}
 		}
@@ -359,18 +351,13 @@ namespace LittleEngine::Input
 
 	void BindMouseButtonToCommand(MouseButton mb, std::unique_ptr<Command> cmd)
 	{
-		if (mb < 0 || mb > MaxMouseButton)
-		{
-			Utils::Logger::Warning("Input::BindMouseButtonToCommand: invalid mouse button: " + std::to_string(mb));
-			return;
-		}
 		// check if action already binded to mouse button.
-		auto& cmds = s_mouseButtonBindings[mb];
+		auto& cmds = s_mouseButtonBindings[static_cast<uint8_t>(mb)];
 		for (size_t i = 0; i < cmds.size(); i++)
 		{
 			if (typeid(*cmds[i]) == typeid(*cmd))
 			{
-				Utils::Logger::Warning("Input::BindMouseButtonToCommand: command: " + cmd->GetName() + " already binded to mouse button: " + std::to_string(mb));
+				Utils::Logger::Warning("Input::BindMouseButtonToCommand: command: " + cmd->GetName() + " already binded to mouse button: " + std::to_string(static_cast<uint8_t>(mb)));
 				return;
 			}
 		}
@@ -381,24 +368,14 @@ namespace LittleEngine::Input
 
 #pragma region Callbacks
 
-	void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
+	void scroll_callback(float xoffset, float yoffset)
 	{
-#if ENABLE_IMGUI == 1
-		// callback for imgui
-		ImGui_ImplGlfw_ScrollCallback(window, xoffset, yoffset);
-
-#endif
 		// xoffset and yoffset indicate scroll amount (e.g. vertical scroll in yoffset)
 		Utils::Logger::Warning("Input::scroll_callback not implemented yet.");
 	}
 
-	void cursor_position_callback(GLFWwindow* window, double xpos, double ypos)
+	void cursor_position_callback(float xpos, float ypos)
 	{
-#if ENABLE_IMGUI == 1
-		// callback for imgui
-		ImGui_ImplGlfw_CursorPosCallback(window, xpos, ypos);
-
-#endif
 		// xpos and ypos are the new mouse cursor position in window coordinates
 		// where (0, 0) is the top left corner and measured in pixels.
 
@@ -406,38 +383,17 @@ namespace LittleEngine::Input
 		s_mouseY = s_windowHeight - static_cast<int>(ypos);
 	}
 
-	void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
+	void mouse_button_callback(MouseButton mb, InputEventType type)
 	{
-#if ENABLE_IMGUI == 1
-		// callback for imgui
-		ImGui_ImplGlfw_MouseButtonCallback(window, button, action, mods);  // Forward to ImGui
-
-#endif
-		if (button < 0 || button >= MaxMouseButton) return; // GLFW_MOUSE_BUTTON_LAST = 7
-
-		if (action == GLFW_PRESS)
-			s_currentMouseButtonState[button] = true;
-		else if (action == GLFW_RELEASE)
-			s_currentMouseButtonState[button] = false;
+		s_currentMouseButtonState[static_cast<uint8_t>(mb)] = type == InputEventType::Pressed;
 	}
 
-	void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
-	{
-#if ENABLE_IMGUI == 1
-		// callback for imgui
-		ImGui_ImplGlfw_KeyCallback(window, key, scancode, action, mods);  // Forward to ImGui
-
-#endif
-		if (key < 0 || key >= MaxKeyCode) return; // GLFW_KEY_LAST = 348 (just to be sure)
-
-		if (action == GLFW_PRESS || action == GLFW_REPEAT)
-			s_currentKeyState[key] = true;
-		else if (action == GLFW_RELEASE)
-			s_currentKeyState[key] = false;
-
+	void key_callback(KeyCode key, InputEventType type)
+	{ 
+		s_currentKeyState[static_cast<uint16_t>(key)] = type == InputEventType::Pressed;
 	}
 
-	void focus_callback(GLFWwindow* window, int focused)
+	void focus_callback(bool focused)
 	{
 		if (!focused)
 		{

@@ -8,6 +8,13 @@
 
 #include "LittleEngine/Utils/logger.h"
 #include "LittleEngine/Utils/debug_tools.h"
+#include "LittleEngine/Platform/GLFW/glfw_utils.h"
+
+#if ENABLE_IMGUI == 1
+#include <imgui.h>
+#include <backends/imgui_impl_glfw.h>
+#include <backends/imgui_impl_opengl3.h>
+#endif // ENABLE_IMGUI
 
 
 
@@ -250,9 +257,13 @@ namespace LittleEngine::Platform
 
 		glfwSetWindowFocusCallback(m_window, [](GLFWwindow* window, int focused)
 			{
+				bool focus = focused == GLFW_TRUE;
 				WindowState& state = *static_cast<WindowState*>(glfwGetWindowUserPointer(window));
 				if (state.windowFocusCallback)
-					state.windowFocusCallback(focused == GLFW_TRUE);
+					state.windowFocusCallback(focus);
+
+				// forward to input
+				Input::focus_callback(focus);
 			});
 
 		glfwSetWindowCloseCallback(m_window, [](GLFWwindow* window)
@@ -264,31 +275,59 @@ namespace LittleEngine::Platform
 
 		glfwSetCursorPosCallback(m_window, [](GLFWwindow* window, double xpos, double ypos)
 			{
+				float x = static_cast<float>(xpos);
+				float y = static_cast<float>(ypos);
 				WindowState& state = *static_cast<WindowState*>(glfwGetWindowUserPointer(window));
 				if (state.mouseMoveCallback)
-					state.mouseMoveCallback(static_cast<float>(xpos), static_cast<float>(ypos));
+					state.mouseMoveCallback(x, y);
+
+				// forward to input
+				Input::cursor_position_callback(x, y);
+
+#if ENABLE_IMGUI == 1 && defined(USE_GLFW)
+				// forward to imgui
+				ImGui_ImplGlfw_CursorPosCallback(window, xpos, ypos);
+#endif
 			});
 
 		glfwSetScrollCallback(m_window, [](GLFWwindow* window, double xoffset, double yoffset)
 			{
+				float x = static_cast<float>(xoffset);
+				float y = static_cast<float>(yoffset);
 				WindowState& state = *static_cast<WindowState*>(glfwGetWindowUserPointer(window));
 				if (state.mouseScrollCallback)
-					state.mouseScrollCallback(static_cast<float>(xoffset), static_cast<float>(yoffset));
+					state.mouseScrollCallback(x, y);
+
+				// forward to input
+				Input::scroll_callback(x, y);
+
+#if ENABLE_IMGUI == 1
+				// forward to imgui
+				ImGui_ImplGlfw_ScrollCallback(window, xoffset, yoffset);
+#endif
 			});
 
 		glfwSetMouseButtonCallback(m_window, [](GLFWwindow* window, int button, int action, int mods)
 			{
 				WindowState& state = *static_cast<WindowState*>(glfwGetWindowUserPointer(window));
-				Input::MouseButton mb = static_cast<Input::MouseButton>(button);
+				Input::MouseButton mb = GlfwUtils::MouseButtonFromGlfw(button); // Convert GLFW button to Input::MouseButton
 				Input::InputEventType type = action == GLFW_PRESS ? Input::InputEventType::Pressed : Input::InputEventType::Released;
 				if (state.mouseButtonCallback)
 					state.mouseButtonCallback(mb, type);
+
+				// forward to input
+				Input::mouse_button_callback(mb, type);
+
+#if ENABLE_IMGUI == 1 && defined(USE_GLFW)
+				// forward to imgui
+				ImGui_ImplGlfw_MouseButtonCallback(window, button, action, mods);  // Forward to ImGui
+#endif
 			});
 
 		glfwSetKeyCallback(m_window, [](GLFWwindow* window, int key, int scancode, int action, int mods)
 			{
 				WindowState& state = *static_cast<WindowState*>(glfwGetWindowUserPointer(window));
-				Input::KeyCode k = static_cast<Input::KeyCode>(key);
+				Input::KeyCode k = GlfwUtils::KeyFromGlfw(key); // Convert GLFW key to Input::KeyCode
 				Input::InputEventType type;
 				if (action == GLFW_PRESS || action == GLFW_REPEAT)
 					type = Input::InputEventType::Pressed;
@@ -297,6 +336,14 @@ namespace LittleEngine::Platform
 
 				if (state.keyCallback)
 					state.keyCallback(k, type);
+
+				// forward to input
+				Input::key_callback(k, type);
+
+#if ENABLE_IMGUI == 1 && defined(USE_GLFW)
+				// forward to imgui
+				ImGui_ImplGlfw_KeyCallback(window, key, scancode, action, mods);  // Forward to ImGui
+#endif
 			});
 
 		glfwSetCharCallback(m_window, [](GLFWwindow* window, unsigned int codepoint)
@@ -305,6 +352,8 @@ namespace LittleEngine::Platform
 
 				if (state.charCallback)
 					state.charCallback(codepoint);
+
+				// TODO implement this in input
 			});
 	}
 #pragma endregion

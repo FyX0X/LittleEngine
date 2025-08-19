@@ -37,6 +37,7 @@ namespace LittleEngine::Platform
 		void GetWindowSize(int& width, int& height) const { width = m_state.width; height = m_state.height; }
 		bool ShouldClose() const override;
 		void* GetNativeWindowHandle() override { return static_cast<void*>(m_window); } // returns the GLFWwindow*
+		void* GetNativeContext() override { return nullptr; } //not applicable for GLFW, returns nullptr
 
 		// =========
 		// Callbacks
