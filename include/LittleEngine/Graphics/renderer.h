@@ -83,13 +83,9 @@ namespace LittleEngine::Graphics
 		}
 		void DrawRect(const Rect& rect, const Color& color = Colors::White)
 		{
-			DrawRect(rect, s_defaultTexture, color, {0, 0, 1, 1});
+			DrawRect(rect, s_defaultTexture, color);
 		}
-		void DrawRect(const Rect& rect, Texture texture, const Color& color = Colors::White)
-		{
-			DrawRect(rect, texture, color, { 0, 0, 1, 1 });
-		}
-		void DrawRect(const Rect& rect, Texture texture, const Color& color = Colors::White, const glm::vec4& uv);
+		void DrawRect(const Rect& rect, Texture texture, const Color& color = Colors::White, const glm::vec4& uv = { 0, 0, 1, 1 });
 
 #pragma endregion
 
