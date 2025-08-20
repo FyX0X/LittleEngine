@@ -22,6 +22,10 @@ namespace LittleEngine::Graphics
 		glm::vec2 uv;
 		Color color;
 		float textureIndex;
+
+		Vertex(const glm::vec2& p, const glm::vec2& u, const Color& c, float tIndex)
+			: pos(p), uv(u), color(c), textureIndex(tIndex) {
+		}
 	};
 
 

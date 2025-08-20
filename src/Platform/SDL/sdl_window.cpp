@@ -91,7 +91,7 @@ namespace LittleEngine::Platform
 		}
 #endif
 
-		SetVsync(true);
+		SetVsync(config.vsyncEnabled);
 
 		// Set initial window mode
 		SetWindowMode(config.mode);
@@ -155,18 +155,18 @@ namespace LittleEngine::Platform
 			switch (event.type)
 			{
 				case SDL_EVENT_QUIT:
+					m_shouldClose = true; // Set the close flag
 					if (m_state.windowCloseCallback) {
 						m_state.windowCloseCallback();
 					}
-					m_shouldClose = true; // Set the close flag
 					break;
 				case SDL_EVENT_WINDOW_RESIZED:
+					m_state.width = event.window.data1;
+					m_state.height = event.window.data2;
 					if (m_state.windowResizeCallback) {
 						m_state.windowResizeCallback(event.window.data1, event.window.data2);
 					}
 
-					m_state.width = event.window.data1;
-					m_state.height = event.window.data2;
 					break;
 				case SDL_EVENT_WINDOW_FOCUS_GAINED:
 					if (m_state.windowFocusCallback) {
