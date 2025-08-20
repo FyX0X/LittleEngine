@@ -191,7 +191,7 @@ namespace LittleEngine::Graphics
 
 #pragma region Draw functions
 
-	void Renderer::DrawRect(const Rect& rect, Texture texture, const Color colors[4], const glm::vec4& uv)
+	void Renderer::DrawRect(const Rect& rect, Texture texture, const Color& color, const glm::vec4& uv)
 	{
 
 		if (texture.id == 0)	// problem
@@ -223,10 +223,10 @@ namespace LittleEngine::Graphics
 		int index = m_vertices.size();
 
 
-		m_vertices.emplace_back(p0, uv0, colors[0], texture.id);
-		m_vertices.emplace_back(p1, uv1, colors[1], texture.id);
-		m_vertices.emplace_back(p2, uv2, colors[2], texture.id);
-		m_vertices.emplace_back(p3, uv3, colors[3], texture.id);
+		m_vertices.emplace_back(p0, uv0, color, texture.id);
+		m_vertices.emplace_back(p1, uv1, color, texture.id);
+		m_vertices.emplace_back(p2, uv2, color, texture.id);
+		m_vertices.emplace_back(p3, uv3, color, texture.id);
 
 		m_indices.push_back(index + 0);
 		m_indices.push_back(index + 1);
