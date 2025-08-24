@@ -192,6 +192,17 @@ I can generate a tailored **Template README** once you share how you want users 
 ---
 
 ## 📝 License
+This project uses third-party libraries:
+- glad (MIT)
+- glm (MIT)
+- stb_image (Public Domain/MIT)
+- freetype (FreeType License)
+- imgui (MIT)
+- miniaudio (MIT/Unlicense)
+- glfw (zlib/libpng)
+- SDL3 (zlib)
+- enet (MIT)
 
-The repository vendors multiple third‑party licenses under `thirdparty/`. If you plan to open‑source the engine itself, add your own top‑level `LICENSE` and clarify third‑party licenses.
+All third-party licenses are provided in their respective `thirdparty/` directory.
+
 
