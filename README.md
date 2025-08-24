@@ -202,7 +202,6 @@ This project uses third-party libraries:
 - glfw (zlib/libpng)
 - SDL3 (zlib)
 - enet (MIT)
-
-All third-party licenses are provided in their respective `thirdparty/` directory.
+You can view a summary of the third-party licenses in the `LICENSES.md` file.
 
 
