@@ -22,6 +22,10 @@ namespace LittleEngine::Graphics
 		glm::vec2 uv;
 		Color color;
 		float textureIndex;
+
+		Vertex(const glm::vec2& p, const glm::vec2& u, const Color& c, float tIndex)
+			: pos(p), uv(u), color(c), textureIndex(tIndex) {
+		}
 	};
 
 
@@ -79,20 +83,9 @@ namespace LittleEngine::Graphics
 		}
 		void DrawRect(const Rect& rect, const Color& color = Colors::White)
 		{
-			Color colors[4] = { color, color, color, color };
-			DrawRect(rect, s_defaultTexture, colors, {0, 0, 1, 1});
+			DrawRect(rect, s_defaultTexture, color);
 		}
-		void DrawRect(const Rect& rect, Texture texture, const Color& color = Colors::White)
-		{
-			Color colors[4] = { color, color, color, color };
-			DrawRect(rect, texture, colors, { 0, 0, 1, 1 });
-		}
-		void DrawRect(const Rect& rect, Texture texture, const Color& color, const glm::vec4& uv)
-		{
-			Color colors[4] = { color, color, color, color };
-			DrawRect(rect, texture, colors, uv);
-		}
-		void DrawRect(const Rect& rect, Texture texture, const Color colors[4], const glm::vec4& uv);
+		void DrawRect(const Rect& rect, Texture texture, const Color& color = Colors::White, const glm::vec4& uv = { 0, 0, 1, 1 });
 
 #pragma endregion
 

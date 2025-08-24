@@ -33,7 +33,9 @@ namespace LittleEngine::Platform::GlfwUtils
 		    case GLFW_KEY_9: return Input::KeyCode::D9;
 
             case GLFW_KEY_SEMICOLON: return Input::KeyCode::Semicolon;
-            case GLFW_KEY_EQUAL: return Input::KeyCode::Equal;            // Letters
+            case GLFW_KEY_EQUAL: return Input::KeyCode::Equal;
+
+            // Letters
             case GLFW_KEY_A: return Input::KeyCode::A;
             case GLFW_KEY_B: return Input::KeyCode::B;
             case GLFW_KEY_C: return Input::KeyCode::C;

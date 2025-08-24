@@ -73,7 +73,7 @@ namespace LittleEngine::Platform
 
 
 		glfwSetWindowUserPointer(m_window, &m_state);
-		SetVsync(true);
+		SetVsync(config.vsyncEnabled);
 
 		// Set initial window mode
 		SetWindowMode(config.mode);

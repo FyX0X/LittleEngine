@@ -191,7 +191,7 @@ namespace LittleEngine::Graphics
 
 #pragma region Draw functions
 
-	void Renderer::DrawRect(const Rect& rect, Texture texture, const Color colors[4], const glm::vec4& uv)
+	void Renderer::DrawRect(const Rect& rect, Texture texture, const Color& color, const glm::vec4& uv)
 	{
 
 		if (texture.id == 0)	// problem
@@ -219,18 +219,14 @@ namespace LittleEngine::Graphics
 		// TODO ADD ROTATION LATER
 		// MAYBE 
 
-		Vertex v0 = { p0, uv0, colors[0], texture.id};
-		Vertex v1 = { p1, uv1, colors[1], texture.id};
-		Vertex v2 = { p2, uv2, colors[2], texture.id};
-		Vertex v3 = { p3, uv3, colors[3], texture.id};
-
 
 		int index = m_vertices.size();
 
-		m_vertices.push_back(v0);
-		m_vertices.push_back(v1);
-		m_vertices.push_back(v2);
-		m_vertices.push_back(v3);
+
+		m_vertices.emplace_back(p0, uv0, color, texture.id);
+		m_vertices.emplace_back(p1, uv1, color, texture.id);
+		m_vertices.emplace_back(p2, uv2, color, texture.id);
+		m_vertices.emplace_back(p3, uv3, color, texture.id);
 
 		m_indices.push_back(index + 0);
 		m_indices.push_back(index + 1);
@@ -264,18 +260,13 @@ namespace LittleEngine::Graphics
 		glm::vec2 uv3{ 0, 1 };		// top left
 
 
-		Vertex v0 = { p0, uv0, color, s_defaultTexture.id };
-		Vertex v1 = { p1, uv1, color, s_defaultTexture.id };
-		Vertex v2 = { p2, uv2, color, s_defaultTexture.id };
-		Vertex v3 = { p3, uv3, color, s_defaultTexture.id };
-
 
 		int index = m_vertices.size();
 
-		m_vertices.push_back(v0);
-		m_vertices.push_back(v1);
-		m_vertices.push_back(v2);
-		m_vertices.push_back(v3);
+		m_vertices.emplace_back(p0, uv0, color, s_defaultTexture.id);
+		m_vertices.emplace_back(p1, uv1, color, s_defaultTexture.id);
+		m_vertices.emplace_back(p2, uv2, color, s_defaultTexture.id);
+		m_vertices.emplace_back(p3, uv3, color, s_defaultTexture.id);
 
 		m_indices.push_back(index + 0);
 		m_indices.push_back(index + 1);
@@ -318,14 +309,11 @@ namespace LittleEngine::Graphics
 		for (size_t i = 0; i < triangleCount / 2; i++)
 		{
 			int index = m_vertices.size();
-			Vertex v0{ poly.vertices[0], {0, 0}, color, s_defaultTexture.id }; // first vertex
-			Vertex v1{ poly.vertices[2 * i + 1], {0, 0}, color, s_defaultTexture.id }; // current vertex
-			Vertex v2{ poly.vertices[2 * i + 2], {0, 0}, color, s_defaultTexture.id }; // next vertex
-			Vertex v3{ poly.vertices[2 * i + 3], {0, 0}, color, s_defaultTexture.id }; // first vertex again for the quad
-			m_vertices.push_back(v0);
-			m_vertices.push_back(v1);
-			m_vertices.push_back(v2);
-			m_vertices.push_back(v3);
+
+			m_vertices.emplace_back(poly.vertices[0], glm::vec2{ 0, 0 }, color, s_defaultTexture.id); // first vertex for the quad
+			m_vertices.emplace_back(poly.vertices[2 * i + 1], glm::vec2{ 0, 0 }, color, s_defaultTexture.id); // current vertex for the quad
+			m_vertices.emplace_back(poly.vertices[2 * i + 2], glm::vec2{ 0, 0 }, color, s_defaultTexture.id); // next vertex for the quad
+			m_vertices.emplace_back(poly.vertices[2 * i + 3], glm::vec2{ 0, 0 }, color, s_defaultTexture.id); // first vertex again for the quad
 
 			m_indices.push_back(index + 0);
 			m_indices.push_back(index + 1);
