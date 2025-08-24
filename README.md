@@ -172,7 +172,6 @@ Vendored in `thirdparty/` and built via CMake:
 ## 🗺️ Roadmap / Ideas
 
 - Toggle networking (ENet) behind an option and wrap in a `Net/` module.
-- Optional ECS adapter for game-side entities.
 - More robust sprite batching and shape primitives.
 - Sample game(s) and a project **template** (see below).
 
@@ -196,7 +195,3 @@ I can generate a tailored **Template README** once you share how you want users 
 
 The repository vendors multiple third‑party licenses under `thirdparty/`. If you plan to open‑source the engine itself, add your own top‑level `LICENSE` and clarify third‑party licenses.
 
----
-
-## 🙌 Credits
-- Engine author: **Martin Ergo** (as cited in headers).
